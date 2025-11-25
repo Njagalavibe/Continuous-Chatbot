@@ -23,4 +23,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),  # Root URL should point to home view
     path('register/', views.register, name='register'),
+    path('send_message/', views.send_message, name='send_message'),
+    path('get_messages/', views.get_messages, name='get_messages'),
 ]

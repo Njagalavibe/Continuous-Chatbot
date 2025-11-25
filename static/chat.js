@@ -1,4 +1,4 @@
-// Chat-specific JavaScript functionality
+// Chat-specific JavaScript functionality with real API integration
 
 class ChatApp {
     constructor() {
@@ -7,21 +7,26 @@ class ChatApp {
         this.chatMessages = document.getElementById('chat-messages');
         this.loading = document.getElementById('loading');
         
+        this.isSending = false;
+        this.csrfToken = this.getCsrfToken();
+        
         this.init();
     }
     
     init() {
-        // Enable input fields
         this.enableInput();
-        
-        // Set up event listeners
         this.setupEventListeners();
-        
-        // Initial scroll to bottom
         this.scrollToBottom();
-        
-        // Focus on input
         this.focusInput();
+        this.startAutoRefresh();
+    }
+    
+    getCsrfToken() {
+        const cookieValue = document.cookie
+            .split('; ')
+            .find(row => row.startsWith('csrftoken='))
+            ?.split('=')[1];
+        return cookieValue || '';
     }
     
     enableInput() {
@@ -30,15 +35,13 @@ class ChatApp {
     }
     
     setupEventListeners() {
-        // Send button click
         if (this.sendBtn) {
             this.sendBtn.addEventListener('click', () => this.sendMessage());
         }
         
-        // Enter key in input
         if (this.messageInput) {
             this.messageInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
+                if (e.key === 'Enter' && !this.isSending) {
                     this.sendMessage();
                 }
             });
@@ -60,6 +63,11 @@ class ChatApp {
     addMessage(role, content) {
         if (!this.chatMessages) return;
         
+        const emptyState = this.chatMessages.querySelector('.empty-chat');
+        if (emptyState) {
+            emptyState.remove();
+        }
+        
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${role === 'user' ? 'user-message' : 'assistant-message'}`;
         messageDiv.innerHTML = `<strong>${role === 'user' ? 'You' : 'AI'}:</strong><br>${this.escapeHtml(content)}`;
@@ -73,20 +81,51 @@ class ChatApp {
         return div.innerHTML;
     }
     
-    sendMessage() {
+    async sendMessage() {
+        if (this.isSending) return;
+        
         const message = this.messageInput?.value.trim();
         if (!message) return;
         
-        // Disable input and show loading
+        this.isSending = true;
         this.disableInput();
         this.showLoading();
         
-        // Add user message immediately
+        // Add user message immediately for better UX
         this.addMessage('user', message);
         this.clearInput();
         
-        // Simulate AI response (will be replaced with real API call)
-        this.simulateAIResponse(message);
+        try {
+            const response = await this.sendToAPI(message);
+            
+            if (response.status === 'success') {
+                this.addMessage('assistant', response.ai_response);
+            } else {
+                this.addMessage('assistant', `Error: ${response.message || 'Failed to get response'}`);
+            }
+            
+        } catch (error) {
+            console.error('Error sending message:', error);
+            this.addMessage('assistant', 'Sorry, there was an error connecting to the AI service.');
+        } finally {
+            this.enableInput();
+            this.hideLoading();
+            this.focusInput();
+            this.isSending = false;
+        }
+    }
+    
+    async sendToAPI(message) {
+        const response = await fetch('/send_message/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': this.csrfToken
+            },
+            body: JSON.stringify({ message: message })
+        });
+        
+        return await response.json();
     }
     
     disableInput() {
@@ -111,24 +150,47 @@ class ChatApp {
         if (this.messageInput) this.messageInput.value = '';
     }
     
-    simulateAIResponse(userMessage) {
-        // Simulate API delay
-        setTimeout(() => {
-            const responses = [
-                `I understand you're saying: "${userMessage}". This is a simulated response until we connect to the DeepSeek API.`,
-                `You asked about: "${userMessage}". In the next version, this will be a real AI response from DeepSeek!`,
-                `Interesting point about "${userMessage}". The actual API integration will happen in the next development phase.`,
-                `Regarding "${userMessage}" - this is currently a simulation. Real AI responses coming soon!`
-            ];
+    async refreshMessages() {
+        try {
+            const response = await fetch('/get_messages/');
+            const data = await response.json();
             
-            const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-            this.addMessage('assistant', randomResponse);
-            
-            // Re-enable input
-            this.enableInput();
-            this.hideLoading();
-            this.focusInput();
-        }, 1500 + Math.random() * 1000); // Random delay between 1.5-2.5 seconds
+            if (data.status === 'success') {
+                this.renderAllMessages(data.messages);
+            }
+        } catch (error) {
+            console.error('Error refreshing messages:', error);
+        }
+    }
+    
+    renderAllMessages(messages) {
+        if (!this.chatMessages) return;
+        
+        this.chatMessages.innerHTML = '';
+        
+        if (messages.length === 0) {
+            const emptyDiv = document.createElement('div');
+            emptyDiv.className = 'empty-chat';
+            emptyDiv.innerHTML = '<p>No messages yet. Start your conversation!</p>';
+            this.chatMessages.appendChild(emptyDiv);
+            return;
+        }
+        
+        messages.forEach(msg => {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${msg.role === 'user' ? 'user-message' : 'assistant-message'}`;
+            messageDiv.innerHTML = `<strong>${msg.role === 'user' ? 'You' : 'AI'}:</strong><br>${this.escapeHtml(msg.content)}`;
+            this.chatMessages.appendChild(messageDiv);
+        });
+        
+        this.scrollToBottom();
+    }
+    
+    startAutoRefresh() {
+        // Refresh messages every 3 seconds for cross-device sync
+        setInterval(() => {
+            this.refreshMessages();
+        }, 3000);
     }
 }
 
