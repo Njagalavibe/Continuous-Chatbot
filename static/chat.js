@@ -1,200 +1,100 @@
-// Chat-specific JavaScript functionality with real API integration
-
-class ChatApp {
-    constructor() {
-        this.messageInput = document.getElementById('message-input');
-        this.sendBtn = document.getElementById('send-btn');
-        this.chatMessages = document.getElementById('chat-messages');
-        this.loading = document.getElementById('loading');
+// Fixed Chat JavaScript - Preserves server CSS structure
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Chat loaded - preserving server CSS structure');
+    
+    const messageInput = document.getElementById('message-input');
+    const sendBtn = document.getElementById('send-btn');
+    const chatMessages = document.getElementById('chat-messages');
+    const loading = document.getElementById('loading');
+    
+    // Enable inputs and hide loading
+    if (messageInput) messageInput.disabled = false;
+    if (sendBtn) sendBtn.disabled = false;
+    if (loading) loading.style.display = 'none';
+    
+    // Send message function
+    async function sendMessage() {
+        const message = messageInput.value.trim();
+        if (!message) return;
         
-        this.isSending = false;
-        this.csrfToken = this.getCsrfToken();
+        // Add user message with proper CSS structure
+        addMessage('user', message);
+        messageInput.value = '';
         
-        this.init();
-    }
-    
-    init() {
-        this.enableInput();
-        this.setupEventListeners();
-        this.scrollToBottom();
-        this.focusInput();
-        this.startAutoRefresh();
-    }
-    
-    getCsrfToken() {
-        const cookieValue = document.cookie
-            .split('; ')
-            .find(row => row.startsWith('csrftoken='))
-            ?.split('=')[1];
-        return cookieValue || '';
-    }
-    
-    enableInput() {
-        if (this.messageInput) this.messageInput.disabled = false;
-        if (this.sendBtn) this.sendBtn.disabled = false;
-    }
-    
-    setupEventListeners() {
-        if (this.sendBtn) {
-            this.sendBtn.addEventListener('click', () => this.sendMessage());
-        }
+        // Show loading
+        if (loading) loading.style.display = 'block';
+        if (sendBtn) sendBtn.disabled = true;
+        if (messageInput) messageInput.disabled = true;
         
-        if (this.messageInput) {
-            this.messageInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter' && !this.isSending) {
-                    this.sendMessage();
-                }
+        try {
+            const response = await fetch('/send_message/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCsrfToken()
+                },
+                body: JSON.stringify({ message: message })
             });
+            
+            const data = await response.json();
+            addMessage('assistant', data.ai_response);
+            
+        } catch (error) {
+            addMessage('assistant', 'Error: Could not send message');
+        } finally {
+            if (loading) loading.style.display = 'none';
+            if (sendBtn) sendBtn.disabled = false;
+            if (messageInput) messageInput.disabled = false;
+            if (messageInput) messageInput.focus();
         }
     }
     
-    scrollToBottom() {
-        if (this.chatMessages) {
-            this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
-        }
-    }
-    
-    focusInput() {
-        if (this.messageInput) {
-            this.messageInput.focus();
-        }
-    }
-    
-    addMessage(role, content) {
-        if (!this.chatMessages) return;
-        
-        const emptyState = this.chatMessages.querySelector('.empty-chat');
-        if (emptyState) {
-            emptyState.remove();
-        }
+    function addMessage(role, content) {
+        const emptyState = document.querySelector('.empty-chat');
+        if (emptyState) emptyState.remove();
         
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${role === 'user' ? 'user-message' : 'assistant-message'}`;
-        messageDiv.innerHTML = `<strong>${role === 'user' ? 'You' : 'AI'}:</strong><br>${this.escapeHtml(content)}`;
-        this.chatMessages.appendChild(messageDiv);
-        this.scrollToBottom();
-    }
-    
-    escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
-    
-    async sendMessage() {
-        if (this.isSending) return;
         
-        const message = this.messageInput?.value.trim();
-        if (!message) return;
+        const messageContent = document.createElement('div');
+        messageContent.className = 'message-content';
         
-        this.isSending = true;
-        this.disableInput();
-        this.showLoading();
+        const strong = document.createElement('strong');
+        strong.textContent = role === 'user' ? 'You: ' : 'AI: ';
         
-        // Add user message immediately for better UX
-        this.addMessage('user', message);
-        this.clearInput();
+        const messageText = document.createElement('div');
+        messageText.className = 'message-text';
+        messageText.textContent = content;
         
-        try {
-            const response = await this.sendToAPI(message);
-            
-            if (response.status === 'success') {
-                this.addMessage('assistant', response.ai_response);
-            } else {
-                this.addMessage('assistant', `Error: ${response.message || 'Failed to get response'}`);
-            }
-            
-        } catch (error) {
-            console.error('Error sending message:', error);
-            this.addMessage('assistant', 'Sorry, there was an error connecting to the AI service.');
-        } finally {
-            this.enableInput();
-            this.hideLoading();
-            this.focusInput();
-            this.isSending = false;
+        messageContent.appendChild(strong);
+        messageContent.appendChild(messageText);
+        messageDiv.appendChild(messageContent);
+        
+        if (chatMessages) {
+            chatMessages.appendChild(messageDiv);
+            // Smart scroll only if near bottom
+            smartScrollToBottom();
         }
     }
     
-    async sendToAPI(message) {
-        const response = await fetch('/send_message/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': this.csrfToken
-            },
-            body: JSON.stringify({ message: message })
+    function smartScrollToBottom() {
+        if (!chatMessages) return;
+        const distanceFromBottom = chatMessages.scrollHeight - chatMessages.clientHeight - chatMessages.scrollTop;
+        if (distanceFromBottom < 100) {
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+    }
+    
+    function getCsrfToken() {
+        return document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+    }
+    
+    // Event listeners
+    if (sendBtn) sendBtn.addEventListener('click', sendMessage);
+    if (messageInput) {
+        messageInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') sendMessage();
         });
-        
-        return await response.json();
+        messageInput.focus();
     }
-    
-    disableInput() {
-        if (this.messageInput) this.messageInput.disabled = true;
-        if (this.sendBtn) this.sendBtn.disabled = true;
-    }
-    
-    enableInput() {
-        if (this.messageInput) this.messageInput.disabled = false;
-        if (this.sendBtn) this.sendBtn.disabled = false;
-    }
-    
-    showLoading() {
-        if (this.loading) this.loading.style.display = 'block';
-    }
-    
-    hideLoading() {
-        if (this.loading) this.loading.style.display = 'none';
-    }
-    
-    clearInput() {
-        if (this.messageInput) this.messageInput.value = '';
-    }
-    
-    async refreshMessages() {
-        try {
-            const response = await fetch('/get_messages/');
-            const data = await response.json();
-            
-            if (data.status === 'success') {
-                this.renderAllMessages(data.messages);
-            }
-        } catch (error) {
-            console.error('Error refreshing messages:', error);
-        }
-    }
-    
-    renderAllMessages(messages) {
-        if (!this.chatMessages) return;
-        
-        this.chatMessages.innerHTML = '';
-        
-        if (messages.length === 0) {
-            const emptyDiv = document.createElement('div');
-            emptyDiv.className = 'empty-chat';
-            emptyDiv.innerHTML = '<p>No messages yet. Start your conversation!</p>';
-            this.chatMessages.appendChild(emptyDiv);
-            return;
-        }
-        
-        messages.forEach(msg => {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${msg.role === 'user' ? 'user-message' : 'assistant-message'}`;
-            messageDiv.innerHTML = `<strong>${msg.role === 'user' ? 'You' : 'AI'}:</strong><br>${this.escapeHtml(msg.content)}`;
-            this.chatMessages.appendChild(messageDiv);
-        });
-        
-        this.scrollToBottom();
-    }
-    
-    startAutoRefresh() {
-        // Refresh messages every 3 seconds for cross-device sync
-        setInterval(() => {
-            this.refreshMessages();
-        }, 3000);
-    }
-}
-
-// Initialize chat when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
-    new ChatApp();
 });

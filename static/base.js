@@ -3,11 +3,11 @@
 // Utility functions
 class AppUtils {
     static showLoading(element) {
-        element.style.display = 'block';
+        if (element) element.style.display = 'block';
     }
     
     static hideLoading(element) {
-        element.style.display = 'none';
+        if (element) element.style.display = 'none';
     }
     
     static disableElements(...elements) {
@@ -28,22 +28,9 @@ class AppUtils {
     }
 }
 
-// Auto-scroll functionality
-class AutoScroll {
-    static toBottom(container) {
-        if (container) {
-            container.scrollTop = container.scrollHeight;
-        }
-    }
-    
-    static toTop(container) {
-        if (container) {
-            container.scrollTop = 0;
-        }
-    }
-}
+// REMOVED: AutoScroll class - This was causing forced scrolling issues
 
 // Export for use in other files (if using modules)
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { AppUtils, AutoScroll };
+    module.exports = { AppUtils };
 }

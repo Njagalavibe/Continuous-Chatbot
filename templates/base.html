@@ -13,7 +13,8 @@
     <link href="{% static 'styles.css' %}" rel="stylesheet">
 </head>
 <body>
-    <nav class="navbar navbar-dark bg-dark">
+    <!-- Sticky Navbar -->
+    <nav class="navbar navbar-dark bg-dark sticky-navbar">
         <div class="container">
             <span class="navbar-brand">chatBot</span>
             {% if user.is_authenticated %}
