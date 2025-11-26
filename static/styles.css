@@ -27,23 +27,9 @@ html, body {
     background: #f8f9fa;
 }
 
-/* Sticky Chat Header - Reduced top spacing */
+/* Hide the chat header since we removed it */
 .chat-header.sticky-chat-header {
-    background: white;
-    padding: 0.75rem 1.5rem;
-    border-bottom: 1px solid #e9ecef;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
-    flex-shrink: 0;
-    z-index: 1020;
-    display: flex;
-    justify-content: between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    position: sticky;
-    top: 0;
-    margin: 1rem 1rem;
-    border-radius: 0.5rem 0.5rem 0 0;
+    display: none;
 }
 
 /* Messages Container - ONE SCROLLBAR ONLY */
@@ -57,22 +43,133 @@ html, body {
     gap: 1rem;
     background: #f8f9fa;
     margin: 0 1rem;
-    /* Ensure it doesn't touch bottom */
-    max-height: calc(100vh - 220px); /* Adjusted for proper spacing */
+    /* Ensure it doesn't touch bottom - adjusted for taller input */
+    max-height: calc(100vh - 240px); /* Increased from 220px to 240px */
 }
 
-/* Sticky Chat Input - Proper bottom spacing */
+/* ===== IMPROVED INPUT AREA WITH TALLER HEIGHT ===== */
+
+/* Input Container - Taller with reduced bottom margin */
 .chat-input-container.sticky-chat-input {
     background: white;
-    padding: 1rem 1.5rem;
-    border-top: 1px solid #e9ecef;
+    border: 2px solid #e9ecef;
+    border-radius: 0.75rem;
+    padding: 0.75rem;
     box-shadow: 0 -2px 8px rgba(0,0,0,0.08);
     flex-shrink: 0;
     position: sticky;
     bottom: 0;
     z-index: 1020;
-    margin: 0 1rem 1rem 1rem; /* Bottom margin prevents touching screen */
-    border-radius: 0 0 0.5rem 0.5rem;
+    margin: 0 1rem 0.5rem 1rem; /* Reduced bottom margin from 1rem to 0.5rem */
+    display: flex;
+    align-items: flex-end;
+    gap: 0.5rem;
+    min-height: 70px; /* Increased from 56px to 70px */
+    transition: all 0.2s ease;
+}
+
+.chat-input-container.sticky-chat-input:focus-within {
+    border-color: #00b389;
+    box-shadow: 0 0 0 3px rgba(0, 179, 137, 0.1);
+}
+
+/* Text Area - Taller with more space */
+.text-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    resize: none;
+    font-size: 1rem;
+    line-height: 1.5;
+    font-family: inherit;
+    padding: 0.75rem; /* Increased padding for more internal space */
+    margin: 0;
+    background: transparent;
+    max-height: 150px; /* Increased from 120px to 150px */
+    overflow-y: auto;
+    min-height: 60px; /* Added minimum height */
+}
+
+.text-input::placeholder {
+    color: #6c757d;
+}
+
+/* Input Buttons - Direct children of chat-input-container */
+.input-buttons {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.5rem;
+}
+
+/* Icon Buttons */
+.btn-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 0.5rem;
+    background: transparent;
+    color: #6c757d;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+}
+
+.btn-icon:hover:not(:disabled) {
+    background: #f8f9fa;
+    color: #00b389;
+}
+
+.btn-icon:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* Send Button States */
+.send-btn:not(:disabled) {
+    background: linear-gradient(135deg, #00ffff, #00b389);
+    color: white;
+}
+
+.send-btn:not(:disabled):hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(4, 207, 176, 0.3);
+}
+
+/* Loading State for Send Button */
+.send-btn.loading .send-icon {
+    display: none;
+}
+
+.send-btn.loading .loading-icon {
+    display: block !important;
+}
+
+/* Paste Button */
+.paste-btn:not(:disabled):hover {
+    background: #f8f9fa;
+    color: #00b389;
+}
+
+/* Scrollbar for text area */
+.text-input::-webkit-scrollbar {
+    width: 4px;
+}
+
+.text-input::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 2px;
+}
+
+.text-input::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 2px;
+}
+
+.text-input::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
 }
 
 /* Messages */
@@ -97,6 +194,7 @@ html, body {
     line-height: 1.4;
     word-wrap: break-word;
     overflow-wrap: break-word;
+    position: relative; /* For timestamp positioning */
 }
 
 .user-message .message-content {
@@ -125,6 +223,145 @@ html, body {
     word-break: break-word;
 }
 
+/* ===== MESSAGE FOOTER WITH TIMESTAMP AND REACTIONS ===== */
+
+/* Message Footer */
+.message-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.75rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Message Timestamp Styles */
+.message-timestamp {
+    font-size: 0.7rem;
+    color: #6c757d;
+    opacity: 0.7;
+    font-style: italic;
+}
+
+/* Reaction Buttons */
+.reaction-buttons {
+    display: flex;
+    gap: 0.25rem;
+    align-items: center;
+}
+
+.reaction-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 0.375rem;
+    background: transparent;
+    color: #6c757d;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+}
+
+.reaction-btn:hover {
+    background: #f8f9fa;
+    color: #495057;
+    transform: scale(1.1);
+}
+
+/* Like Button States */
+.like-btn.active {
+    color: #00b389;
+    background: rgba(0, 179, 137, 0.1);
+}
+
+.like-btn.active:hover {
+    background: rgba(0, 179, 137, 0.15);
+}
+
+/* Dislike Button States */
+.dislike-btn.active {
+    color: #dc3545;
+    background: rgba(220, 53, 69, 0.1);
+}
+
+.dislike-btn.active:hover {
+    background: rgba(220, 53, 69, 0.15);
+}
+
+/* Copy Button States */
+.copy-btn.active {
+    color: #007bff;
+    background: rgba(0, 123, 255, 0.1);
+}
+
+.copy-btn.active:hover {
+    background: rgba(0, 123, 255, 0.15);
+}
+
+/* Copy Success Feedback */
+.copy-btn.copied {
+    color: #28a745;
+    background: rgba(40, 167, 69, 0.1);
+}
+
+.copy-btn.copied:hover {
+    background: rgba(40, 167, 69, 0.15);
+}
+
+/* AI Loading Indicator in Chat Area */
+.ai-loading-indicator {
+    align-self: flex-start;
+    max-width: 85%;
+}
+
+.ai-loading-indicator .message-content {
+    background: white;
+    color: #2c3e50;
+    border-bottom-left-radius: 0.5rem;
+    border: 1px solid #e9ecef;
+    padding: 0.875rem 1.125rem;
+    border-radius: 1.125rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+}
+
+/* Loading Dots Animation */
+.loading-dots {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 0.5rem;
+}
+
+.loading-dots span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #0268c2;
+    animation: loading-dots 1.4s ease-in-out infinite both;
+}
+
+.loading-dots span:nth-child(1) {
+    animation-delay: -0.32s;
+}
+
+.loading-dots span:nth-child(2) {
+    animation-delay: -0.16s;
+}
+
+@keyframes loading-dots {
+    0%, 80%, 100% {
+        transform: scale(0.8);
+        opacity: 0.5;
+    }
+    40% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
 /* Empty Chat State */
 .empty-chat {
     text-align: center;
@@ -142,27 +379,25 @@ html, body {
     font-size: 1.1rem;
 }
 
+/* Removed old input styles since we're using the new design */
 .input-group {
-    margin-bottom: 0.5rem;
-    display: flex;
-    gap: 0.75rem;
+    display: none; /* Hide old input group */
 }
 
 .form-control {
-    flex: 1;
-    border-radius: 0.75rem;
-    border: 1px solid #ddd;
-    padding: 0.75rem 1rem;
-    font-size: 1rem;
-    transition: all 0.2s ease;
+    display: none; /* Hide old form control */
 }
 
-.form-control:focus {
-    outline: none;
-    border-color: #007bff;
-    box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+/* Remove old wrapper styles since we removed them from HTML */
+.input-area-wrapper {
+    display: none;
 }
 
+.text-input-container {
+    display: none;
+}
+
+/* Keep .btn and .btn-primary for potential other uses, but adjust for new input */
 .btn {
     border-radius: 0.75rem;
     padding: 0.75rem 1.5rem;
@@ -213,16 +448,34 @@ html, body {
     .chat-messages-container {
         margin: 0 0.75rem;
         padding: 0.875rem;
-        max-height: calc(100vh - 200px);
+        max-height: calc(100vh - 210px); /* Adjusted for taller input */
     }
     
     .chat-input-container.sticky-chat-input {
-        margin: 0 0.75rem 0.75rem 0.75rem;
-        padding: 0.875rem 1rem;
+        padding: 0.75rem; /* Slightly more padding on tablet */
+        margin: 0 0.75rem 0.5rem 0.75rem; /* Reduced bottom margin */
+        min-height: 65px; /* Taller on tablet */
+        gap: 0.4rem;
+    }
+    
+    .text-input {
+        padding: 0.625rem;
+        min-height: 55px;
+    }
+    
+    .btn-icon {
+        width: 36px;
+        height: 36px;
     }
     
     .message {
         max-width: 92%;
+    }
+    
+    /* Smaller reaction buttons on tablet */
+    .reaction-btn {
+        width: 26px;
+        height: 26px;
     }
 }
 
@@ -241,16 +494,39 @@ html, body {
     .chat-messages-container {
         margin: 0 0.5rem;
         padding: 0.75rem;
-        max-height: calc(100vh - 190px);
+        max-height: calc(100vh - 200px); /* Adjusted for taller input */
     }
     
     .chat-input-container.sticky-chat-input {
-        margin: 0 0.5rem 0.5rem 0.5rem;
-        padding: 0.75rem 0.875rem;
+        padding: 0.625rem;
+        margin: 0 0.5rem 0.5rem 0.5rem; /* Reduced bottom margin */
+        min-height: 60px; /* Taller on mobile */
+        gap: 0.3rem;
+    }
+    
+    .text-input {
+        padding: 0.5rem;
+        min-height: 50px;
+        font-size: 16px; /* Prevent zoom on iOS */
+    }
+    
+    .btn-icon {
+        width: 32px;
+        height: 32px;
     }
     
     .message {
         max-width: 95%;
+    }
+    
+    /* Smaller reaction buttons on mobile */
+    .reaction-btn {
+        width: 24px;
+        height: 24px;
+    }
+    
+    .reaction-buttons {
+        gap: 0.2rem;
     }
 }
 
@@ -287,5 +563,14 @@ html, body {
     scrollbar-color: #c1c1c1 #f1f1f1;
 }
 
-/* Keep all your existing animations and other styles below */
-/* ... your existing animations, focus states, etc. ... */
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
