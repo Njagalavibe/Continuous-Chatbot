@@ -2,99 +2,228 @@
 {% load static %}
 
 {% block content %}
-<div class="chat-fullscreen-container">
-    <!-- Chat Messages (this part scrolls) -->
-    <div id="chat-messages" class="chat-messages-container">
-        {% for message in messages %}
-            <div class="message {% if message.role == 'user' %}user-message{% else %}assistant-message{% endif %}">
-                <div class="message-content">
-                    <strong>{% if message.role == 'user' %}You{% else %}AI{% endif %}:</strong>
-                    <div class="message-text">{{ message.content }}</div>
-                    
-                    <!-- AI Message Footer with Timestamp and Reactions -->
-                    {% if message.role == 'assistant' %}
-                    <div class="message-footer">
-                        <div class="message-timestamp">
-                            {% if message.timestamp %}
-                                {{ message.timestamp|date:"M d, Y H:i" }}
-                            {% else %}
-                                {{ message.created_at|date:"M d, Y H:i" }}
+<div class="chat-layout-container">
+    <!-- Sidebar for Conversation History -->
+    <div class="sidebar-container">
+        <!-- Sidebar Header -->
+        <div class="sidebar-header">
+            <h3>Conversations</h3>
+            <button class="sidebar-close-btn" id="sidebar-close">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="sidebar-search">
+            <div class="search-container">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="search-icon">
+                    <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <input type="text" id="conversation-search" class="search-input" placeholder="Search conversations...">
+            </div>
+        </div>
+
+        <!-- Conversation Groups -->
+        <div class="conversation-groups">
+            <!-- Today -->
+            <div class="conversation-group">
+                <h4 class="group-title">Today</h4>
+                <div class="conversation-list">
+                    <!-- Example conversation card - will be dynamically populated -->
+                    <div class="conversation-card active">
+                        <div class="conversation-preview">
+                            <p class="preview-text">What's the weather like today?</p>
+                        </div>
+                        <div class="conversation-meta">
+                            <span class="conversation-time">2:30 PM</span>
+                            <span class="message-count">3</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Yesterday -->
+            <div class="conversation-group">
+                <h4 class="group-title">Yesterday</h4>
+                <div class="conversation-list">
+                    <div class="conversation-card">
+                        <div class="conversation-preview">
+                            <p class="preview-text">Can you help me with Python programming?</p>
+                        </div>
+                        <div class="conversation-meta">
+                            <span class="conversation-time">4:15 PM</span>
+                            <span class="message-count">12</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Last 7 Days -->
+            <div class="conversation-group">
+                <h4 class="group-title">Last 7 Days</h4>
+                <div class="conversation-list">
+                    <div class="conversation-card">
+                        <div class="conversation-preview">
+                            <p class="preview-text">Explain quantum computing in simple terms</p>
+                        </div>
+                        <div class="conversation-meta">
+                            <span class="conversation-time">Mon</span>
+                            <span class="message-count">8</span>
+                        </div>
+                    </div>
+                    <div class="conversation-card">
+                        <div class="conversation-preview">
+                            <p class="preview-text">Recipe for chocolate chip cookies</p>
+                        </div>
+                        <div class="conversation-meta">
+                            <span class="conversation-time">Sat</span>
+                            <span class="message-count">5</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Older -->
+            <div class="conversation-group">
+                <h4 class="group-title">Older</h4>
+                <div class="conversation-list">
+                    <div class="conversation-card">
+                        <div class="conversation-preview">
+                            <p class="preview-text">Travel recommendations for Japan</p>
+                        </div>
+                        <div class="conversation-meta">
+                            <span class="conversation-time">Mar 15</span>
+                            <span class="message-count">15</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- New Chat Button -->
+        <div class="sidebar-footer">
+            <button class="new-chat-btn" id="new-chat-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 5v14m-7-7h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                New Chat
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Chat Area -->
+    <div class="main-chat-area">
+        <!-- Mobile Header with Hamburger Menu -->
+        <div class="mobile-chat-header">
+            <button class="sidebar-toggle-btn" id="sidebar-toggle">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </button>
+            <h3 class="mobile-chat-title">Chat</h3>
+        </div>
+
+        <!-- Chat Messages Container -->
+        <div class="chat-fullscreen-container">
+            <!-- Chat Messages (this part scrolls) -->
+            <div id="chat-messages" class="chat-messages-container">
+                {% for message in messages %}
+                    <div class="message {% if message.role == 'user' %}user-message{% else %}assistant-message{% endif %}">
+                        <div class="message-content">
+                            <strong>{% if message.role == 'user' %}You{% else %}AI{% endif %}:</strong>
+                            <div class="message-text">{{ message.content }}</div>
+                            
+                            <!-- AI Message Footer with Timestamp and Reactions -->
+                            {% if message.role == 'assistant' %}
+                            <div class="message-footer">
+                                <div class="message-timestamp">
+                                    {% if message.timestamp %}
+                                        {{ message.timestamp|date:"M d, Y H:i" }}
+                                    {% else %}
+                                        {{ message.created_at|date:"M d, Y H:i" }}
+                                    {% endif %}
+                                </div>
+                                <div class="reaction-buttons">
+                                    <button class="reaction-btn like-btn" title="Like">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                            <path d="M14 9V5C14 4.46957 13.7893 3.96086 13.4142 3.58579C13.0391 3.21071 12.5304 3 12 3L7 10V21H17.28C17.7623 21.0055 18.2304 20.8364 18.5979 20.524C18.9654 20.2116 19.2077 19.7789 19.28 19.3L20.66 11.3C20.7035 11.0134 20.6842 10.7207 20.6033 10.4423C20.5225 10.1638 20.3821 9.90629 20.1919 9.68751C20.0016 9.46873 19.7661 9.29393 19.5016 9.17522C19.2371 9.0565 18.9499 8.99672 18.66 9H14Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M7 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V12C3 11.4696 3.21071 10.9609 3.58579 10.5858C3.96086 10.2107 4.46957 10 5 10H7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </button>
+                                    <button class="reaction-btn dislike-btn" title="Dislike">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                            <path d="M10 15V19C10 19.5304 10.2107 20.0391 10.5858 20.4142C10.9609 20.7893 11.4696 21 12 21L17 14V3H6.72C6.23769 2.99455 5.76962 3.16359 5.40213 3.47602C5.03465 3.78845 4.79232 4.22106 4.72 4.7L3.34 12.7C3.2965 12.9866 3.31584 13.2793 3.39667 13.5577C3.4775 13.8362 3.61794 14.0937 3.80816 14.3125C3.99839 14.5313 4.23388 14.7061 4.49839 14.8248C4.7629 14.9435 5.0501 15.0033 5.34 15H10Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M17 3H19C19.5304 3 20.0391 3.21071 20.4142 3.58579C20.7893 3.96086 21 4.46957 21 5V12C21 12.5304 20.7893 13.0391 20.4142 13.4142C20.0391 13.7893 19.5304 14 19 14H17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </button>
+                                    <button class="reaction-btn copy-btn" title="Copy response">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                            <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/>
+                                            <path d="M5 15H4C3.46957 15 2.96086 14.7893 2.58579 14.4142C2.21071 14.0391 2 13.5304 2 13V4C2 3.46957 2.21071 2.96086 2.58579 2.58579C2.96086 2.21071 3.46957 2 4 2H13C13.5304 2 14.0391 2.21071 14.4142 2.58579C14.7893 2.96086 15 3.46957 15 4V5" stroke="currentColor" stroke-width="2"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
                             {% endif %}
                         </div>
-                        <div class="reaction-buttons">
-                            <button class="reaction-btn like-btn" title="Like">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                    <path d="M14 9V5C14 4.46957 13.7893 3.96086 13.4142 3.58579C13.0391 3.21071 12.5304 3 12 3L7 10V21H17.28C17.7623 21.0055 18.2304 20.8364 18.5979 20.524C18.9654 20.2116 19.2077 19.7789 19.28 19.3L20.66 11.3C20.7035 11.0134 20.6842 10.7207 20.6033 10.4423C20.5225 10.1638 20.3821 9.90629 20.1919 9.68751C20.0016 9.46873 19.7661 9.29393 19.5016 9.17522C19.2371 9.0565 18.9499 8.99672 18.66 9H14Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                    <path d="M7 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V12C3 11.4696 3.21071 10.9609 3.58579 10.5858C3.96086 10.2107 4.46957 10 5 10H7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </button>
-                            <button class="reaction-btn dislike-btn" title="Dislike">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                    <path d="M10 15V19C10 19.5304 10.2107 20.0391 10.5858 20.4142C10.9609 20.7893 11.4696 21 12 21L17 14V3H6.72C6.23769 2.99455 5.76962 3.16359 5.40213 3.47602C5.03465 3.78845 4.79232 4.22106 4.72 4.7L3.34 12.7C3.2965 12.9866 3.31584 13.2793 3.39667 13.5577C3.4775 13.8362 3.61794 14.0937 3.80816 14.3125C3.99839 14.5313 4.23388 14.7061 4.49839 14.8248C4.7629 14.9435 5.0501 15.0033 5.34 15H10Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                    <path d="M17 3H19C19.5304 3 20.0391 3.21071 20.4142 3.58579C20.7893 3.96086 21 4.46957 21 5V12C21 12.5304 20.7893 13.0391 20.4142 13.4142C20.0391 13.7893 19.5304 14 19 14H17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </button>
-                            <button class="reaction-btn copy-btn" title="Copy response">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                    <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/>
-                                    <path d="M5 15H4C3.46957 15 2.96086 14.7893 2.58579 14.4142C2.21071 14.0391 2 13.5304 2 13V4C2 3.46957 2.21071 2.96086 2.58579 2.58579C2.96086 2.21071 3.46957 2 4 2H13C13.5304 2 14.0391 2.21071 14.4142 2.58579C14.7893 2.96086 15 3.46957 15 4V5" stroke="currentColor" stroke-width="2"/>
-                                </svg>
-                            </button>
+                    </div>
+                {% empty %}
+                    <div class="empty-chat">
+                        <p>No messages yet. Start your conversation!</p>
+                    </div>
+                {% endfor %}
+                
+                <!-- AI Loading Indicator - appears in chat area during API calls -->
+                <div id="ai-loading" class="ai-loading-indicator" style="display: none;">
+                    <div class="message assistant-message">
+                        <div class="message-content">
+                            <strong>AI:</strong>
+                            <div class="loading-dots">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
                         </div>
                     </div>
-                    {% endif %}
                 </div>
             </div>
-        {% empty %}
-            <div class="empty-chat">
-                <p>No messages yet. Start your conversation!</p>
-            </div>
-        {% endfor %}
-        
-        <!-- AI Loading Indicator - appears in chat area during API calls -->
-        <div id="ai-loading" class="ai-loading-indicator" style="display: none;">
-            <div class="message assistant-message">
-                <div class="message-content">
-                    <strong>AI:</strong>
-                    <div class="loading-dots">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </div>
+            
+            <!-- Cleaner Redesigned Sticky Chat Input -->
+            <div class="chat-input-container sticky-chat-input">
+                <textarea 
+                    id="message-input" 
+                    class="text-input" 
+                    placeholder="Type your message..." 
+                    rows="1"
+                    disabled
+                ></textarea>
+                <div class="input-buttons">
+                    <button id="paste-btn" class="btn-icon paste-btn" title="Paste" disabled>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path d="M16 4H18C18.5304 4 19.0391 4.21071 19.4142 4.58579C19.7893 4.96086 20 5.46957 20 6V20C20 20.5304 19.7893 21.0391 19.4142 21.4142C19.0391 21.7893 18.5304 22 18 22H6C5.46957 22 4.96086 21.7893 4.58579 21.4142C4.21071 21.0391 4 20.5304 4 20V6C4 5.46957 4.21071 4.96086 4.58579 4.58579C4.96086 4.21071 5.46957 4 6 4H8" stroke="currentColor" stroke-width="2"/>
+                            <rect x="8" y="2" width="8" height="4" rx="1" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                    </button>
+                    <button id="send-btn" class="btn-icon send-btn" disabled>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="send-icon">
+                            <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="loading-icon" style="display: none;">
+                            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="15.85 15.85">
+                                <animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1s" repeatCount="indefinite"/>
+                            </circle>
+                        </svg>
+                    </button>
                 </div>
             </div>
         </div>
     </div>
-    
-    <!-- Cleaner Redesigned Sticky Chat Input -->
-    <div class="chat-input-container sticky-chat-input">
-        <textarea 
-            id="message-input" 
-            class="text-input" 
-            placeholder="Type your message..." 
-            rows="1"
-            disabled
-        ></textarea>
-        <div class="input-buttons">
-            <button id="paste-btn" class="btn-icon paste-btn" title="Paste" disabled>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <path d="M16 4H18C18.5304 4 19.0391 4.21071 19.4142 4.58579C19.7893 4.96086 20 5.46957 20 6V20C20 20.5304 19.7893 21.0391 19.4142 21.4142C19.0391 21.7893 18.5304 22 18 22H6C5.46957 22 4.96086 21.7893 4.58579 21.4142C4.21071 21.0391 4 20.5304 4 20V6C4 5.46957 4.21071 4.96086 4.58579 4.58579C4.96086 4.21071 5.46957 4 6 4H8" stroke="currentColor" stroke-width="2"/>
-                    <rect x="8" y="2" width="8" height="4" rx="1" stroke="currentColor" stroke-width="2"/>
-                </svg>
-            </button>
-            <button id="send-btn" class="btn-icon send-btn" disabled>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="send-icon">
-                    <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="loading-icon" style="display: none;">
-                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="15.85 15.85">
-                        <animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1s" repeatCount="indefinite"/>
-                    </circle>
-                </svg>
-            </button>
-        </div>
-    </div>
+
+    <!-- Mobile Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
 </div>
 {% endblock %}
 
