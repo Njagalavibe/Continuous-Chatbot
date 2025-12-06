@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const aiLoading = document.getElementById('ai-loading');
     
     let isSending = false;
+    let currentConversationId = null; // Track current conversation
     
     // ENABLE ALL INPUTS ON PAGE LOAD
     enableAllInputs();
@@ -33,18 +34,19 @@ document.addEventListener('DOMContentLoaded', function() {
             this.sidebarClose = document.getElementById('sidebar-close');
             this.sidebarOverlay = document.getElementById('sidebar-overlay');
             this.searchInput = document.getElementById('conversation-search');
-            this.conversationGroups = document.querySelectorAll('.conversation-group');
-            this.conversationCards = document.querySelectorAll('.conversation-card');
             this.newChatBtn = document.getElementById('new-chat-btn');
+            this.conversationGroups = document.querySelectorAll('.conversation-group');
             
             this.init();
         }
 
         init() {
+            if (!this.sidebar) return;
+            
             this.setupEventListeners();
-            this.loadCollapsedStates();
-            this.setupAutoHideScrollbar();
             this.setupMobileBehavior();
+            this.setupTabletBehavior();
+            this.loadConversationHistory();
         }
 
         setupEventListeners() {
@@ -55,18 +57,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             }
 
-            // Conversation card clicks
-            this.conversationCards.forEach(card => {
-                card.addEventListener('click', () => {
-                    this.setActiveConversation(card);
-                    this.closeMobileSidebar();
-                });
-            });
-
             // New chat button
             if (this.newChatBtn) {
                 this.newChatBtn.addEventListener('click', () => {
-                    this.createNewChat();
+                    this.startNewChat();
                 });
             }
 
@@ -95,97 +89,34 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             }
 
-            // Close sidebar on window resize if switching to desktop
+            // Close sidebar on window resize
             window.addEventListener('resize', () => {
-                if (window.innerWidth > 768) {
-                    this.closeMobileSidebar();
-                }
+                this.handleResponsiveBehavior();
             });
         }
 
-        setupAutoHideScrollbar() {
-            const conversationGroups = document.querySelector('.conversation-groups');
-            if (!conversationGroups) return;
-            
-            // Hide scrollbar by default
-            conversationGroups.style.overflow = 'hidden';
-            
-            conversationGroups.addEventListener('mouseenter', () => {
-                conversationGroups.style.overflow = 'auto';
-            });
-
-            conversationGroups.addEventListener('mouseleave', () => {
-                conversationGroups.style.overflow = 'hidden';
-            });
-
-            // Touch devices - show scrollbar during scroll
-            conversationGroups.addEventListener('touchstart', () => {
-                conversationGroups.style.overflow = 'auto';
-            });
-
-            conversationGroups.addEventListener('touchend', () => {
-                setTimeout(() => {
-                    conversationGroups.style.overflow = 'hidden';
-                }, 2000);
-            });
+        setupTabletBehavior() {
+            // Initial tablet setup
+            this.handleResponsiveBehavior();
         }
 
-        filterConversations(searchTerm) {
-            const term = searchTerm.toLowerCase().trim();
+        handleResponsiveBehavior() {
+            const isTablet = window.innerWidth >= 768 && window.innerWidth <= 1024;
+            const isLandscape = window.innerWidth > window.innerHeight;
             
-            this.conversationCards.forEach(card => {
-                const previewText = card.querySelector('.preview-text').textContent.toLowerCase();
-                const shouldShow = previewText.includes(term);
-                
-                card.style.display = shouldShow ? 'flex' : 'none';
-            });
-
-            // Hide empty groups
-            this.conversationGroups.forEach(group => {
-                const visibleCards = group.querySelectorAll('.conversation-card[style="display: flex"]');
-                const groupTitle = group.querySelector('.group-title');
-                group.style.display = visibleCards.length > 0 ? 'block' : 'none';
-            });
-
-            // Show "No results" message if no matches
-            this.showNoResultsMessage(term);
-        }
-
-        showNoResultsMessage(searchTerm) {
-            const existingMessage = document.querySelector('.no-results-message');
-            if (existingMessage) {
-                existingMessage.remove();
-            }
-
-            if (searchTerm.length > 0) {
-                const visibleCards = document.querySelectorAll('.conversation-card[style="display: flex"]');
-                if (visibleCards.length === 0) {
-                    const noResults = document.createElement('div');
-                    noResults.className = 'no-results-message';
-                    noResults.innerHTML = `
-                        <div style="text-align: center; padding: 2rem; color: #6c757d;">
-                            <p>No conversations found for "${searchTerm}"</p>
-                        </div>
-                    `;
-                    const conversationGroups = document.querySelector('.conversation-groups');
-                    if (conversationGroups) {
-                        conversationGroups.appendChild(noResults);
-                    }
-                }
+            if (isTablet && !isLandscape) {
+                // Tablet portrait: Hide sidebar
+                this.closeMobileSidebar();
             }
         }
 
         setupGroupCollapse() {
             document.querySelectorAll('.group-title').forEach(title => {
-                title.style.cursor = 'pointer';
                 title.addEventListener('click', (e) => {
                     const group = e.target.closest('.conversation-group');
-                    const list = group.querySelector('.conversation-list');
-                    
                     group.classList.toggle('collapsed');
-                    list.style.display = group.classList.contains('collapsed') ? 'none' : 'flex';
                     
-                    this.saveCollapsedState(group.querySelector('.group-title').textContent, group.classList.contains('collapsed'));
+                    this.saveCollapsedState(group.dataset.group, group.classList.contains('collapsed'));
                 });
             });
         }
@@ -200,30 +131,230 @@ document.addEventListener('DOMContentLoaded', function() {
             const states = JSON.parse(sessionStorage.getItem('sidebarGroupStates') || '{}');
             
             this.conversationGroups.forEach(group => {
-                const groupName = group.querySelector('.group-title').textContent;
-                const list = group.querySelector('.conversation-list');
-                
+                const groupName = group.dataset.group;
                 if (states[groupName]) {
                     group.classList.add('collapsed');
-                    list.style.display = 'none';
                 }
             });
         }
 
-        setActiveConversation(card) {
-            // Remove active class from all cards
-            this.conversationCards.forEach(c => c.classList.remove('active'));
+        async loadConversationHistory() {
+            // Show loading state
+            this.showLoadingState();
             
-            // Add active class to clicked card
-            card.classList.add('active');
-            
-            // Here you would load the conversation content
-            console.log('Loading conversation:', card.querySelector('.preview-text').textContent);
+            try {
+                // Simulate API call - replace with your actual endpoint
+                const response = await fetch('/api/conversations/history/', {
+                    headers: {
+                        'X-CSRFToken': getCsrfToken()
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    this.renderConversationHistory(data.conversations);
+                } else {
+                    this.showEmptyState();
+                }
+            } catch (error) {
+                console.error('Failed to load conversation history:', error);
+                this.showEmptyState();
+            }
         }
 
-        createNewChat() {
+        showLoadingState() {
+            const loadingEl = document.getElementById('sidebar-loading');
+            const emptyEl = document.getElementById('sidebar-empty');
+            const groupsContainer = document.getElementById('conversation-groups-container');
+            const noResultsEl = document.getElementById('no-search-results');
+            
+            if (loadingEl) loadingEl.style.display = 'flex';
+            if (emptyEl) emptyEl.style.display = 'none';
+            if (groupsContainer) groupsContainer.style.display = 'none';
+            if (noResultsEl) noResultsEl.style.display = 'none';
+        }
+
+        showEmptyState() {
+            const loadingEl = document.getElementById('sidebar-loading');
+            const emptyEl = document.getElementById('sidebar-empty');
+            const groupsContainer = document.getElementById('conversation-groups-container');
+            const noResultsEl = document.getElementById('no-search-results');
+            
+            if (loadingEl) loadingEl.style.display = 'none';
+            if (emptyEl) emptyEl.style.display = 'flex';
+            if (groupsContainer) groupsContainer.style.display = 'none';
+            if (noResultsEl) noResultsEl.style.display = 'none';
+        }
+
+        renderConversationHistory(conversations) {
+            const loadingEl = document.getElementById('sidebar-loading');
+            const emptyEl = document.getElementById('sidebar-empty');
+            const groupsContainer = document.getElementById('conversation-groups-container');
+            const noResultsEl = document.getElementById('no-search-results');
+            
+            if (loadingEl) loadingEl.style.display = 'none';
+            if (emptyEl) emptyEl.style.display = 'none';
+            if (groupsContainer) groupsContainer.style.display = 'block';
+            if (noResultsEl) noResultsEl.style.display = 'none';
+            
+            // Clear existing conversation lists
+            document.querySelectorAll('.conversation-list').forEach(list => {
+                list.innerHTML = '';
+            });
+            
+            // Add conversations to groups (without updating counts)
+            Object.keys(conversations).forEach(groupName => {
+                const groupData = conversations[groupName];
+                const groupEl = document.querySelector(`[data-group="${groupName}"]`);
+                
+                if (groupEl) {
+                    const listEl = groupEl.querySelector('.conversation-list');
+                    
+                    groupData.forEach(conversation => {
+                        const conversationCard = this.createConversationCard(conversation);
+                        listEl.appendChild(conversationCard);
+                    });
+                }
+            });
+            
+            // Load collapsed states after rendering
+            this.loadCollapsedStates();
+        }
+
+        createConversationCard(conversation) {
+            const card = document.createElement('div');
+            card.className = 'conversation-card';
+            card.dataset.conversationId = conversation.id;
+            
+            if (conversation.id === currentConversationId) {
+                card.classList.add('active');
+            }
+            
+            card.innerHTML = `
+                <div class="conversation-preview">
+                    <p class="preview-text">${this.escapeHtml(conversation.preview)}</p>
+                </div>
+                <div class="conversation-meta">
+                    <span class="conversation-time">${conversation.time_display}</span>
+                </div>
+            `;
+            
+            card.addEventListener('click', () => {
+                this.loadConversation(conversation.id);
+            });
+            
+            return card;
+        }
+
+        escapeHtml(unsafe) {
+            return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        async loadConversation(conversationId) {
+            try {
+                // Set as active conversation
+                this.setActiveConversation(conversationId);
+                currentConversationId = conversationId;
+                
+                // Load conversation messages
+                const response = await fetch(`/api/conversations/${conversationId}/`, {
+                    headers: {
+                        'X-CSRFToken': getCsrfToken()
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    this.renderConversation(data.conversation);
+                }
+                
+                // Close mobile sidebar
+                this.closeMobileSidebar();
+            } catch (error) {
+                console.error('Failed to load conversation:', error);
+            }
+        }
+
+        setActiveConversation(conversationId) {
+            // Remove active class from all cards
+            document.querySelectorAll('.conversation-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            
+            // Add active class to clicked card
+            const activeCard = document.querySelector(`[data-conversation-id="${conversationId}"]`);
+            if (activeCard) {
+                activeCard.classList.add('active');
+            }
+        }
+
+        renderConversation(conversation) {
+            if (!chatMessages) return;
+            
+            // Clear current chat
+            chatMessages.innerHTML = '';
+            
+            // Add messages from conversation
+            conversation.messages.forEach(message => {
+                addMessage(message.role, message.content);
+            });
+            
+            // Scroll to bottom
+            scrollToBottom();
+        }
+
+        filterConversations(searchTerm) {
+            const term = searchTerm.toLowerCase().trim();
+            const conversationCards = document.querySelectorAll('.conversation-card');
+            let hasVisibleResults = false;
+            
+            conversationCards.forEach(card => {
+                const previewText = card.querySelector('.preview-text').textContent.toLowerCase();
+                const shouldShow = previewText.includes(term);
+                card.style.display = shouldShow ? 'flex' : 'none';
+                
+                if (shouldShow) hasVisibleResults = true;
+            });
+            
+            // Show/hide groups based on visible cards
+            this.conversationGroups.forEach(group => {
+                const visibleCards = group.querySelectorAll('.conversation-card[style="display: flex"]');
+                group.style.display = visibleCards.length > 0 ? 'block' : 'none';
+            });
+            
+            // Show no results message if needed
+            this.showNoResultsMessage(term, hasVisibleResults);
+        }
+
+        showNoResultsMessage(searchTerm, hasVisibleResults) {
+            const loadingEl = document.getElementById('sidebar-loading');
+            const emptyEl = document.getElementById('sidebar-empty');
+            const groupsContainer = document.getElementById('conversation-groups-container');
+            const noResultsEl = document.getElementById('no-search-results');
+            
+            if (searchTerm && !hasVisibleResults) {
+                if (loadingEl) loadingEl.style.display = 'none';
+                if (emptyEl) emptyEl.style.display = 'none';
+                if (groupsContainer) groupsContainer.style.display = 'none';
+                if (noResultsEl) noResultsEl.style.display = 'flex';
+            } else if (groupsContainer) {
+                groupsContainer.style.display = 'block';
+                if (noResultsEl) noResultsEl.style.display = 'none';
+            }
+        }
+
+        startNewChat() {
             // Clear active conversation
-            this.conversationCards.forEach(c => c.classList.remove('active'));
+            this.setActiveConversation(null);
+            currentConversationId = null;
+            
+            // Clear current chat
+            clearCurrentChat();
             
             // Clear search
             if (this.searchInput) {
@@ -231,31 +362,30 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.filterConversations('');
             }
             
-            // Reset groups to expanded
-            this.conversationGroups.forEach(group => {
-                group.classList.remove('collapsed');
-                const list = group.querySelector('.conversation-list');
-                if (list) list.style.display = 'flex';
-            });
-            
-            // Clear session storage for groups
-            sessionStorage.removeItem('sidebarGroupStates');
-            
-            // Close mobile sidebar if open
+            // Close mobile sidebar
             this.closeMobileSidebar();
             
-            console.log('Starting new chat...');
+            // Focus on input
+            if (messageInput) messageInput.focus();
         }
 
         openMobileSidebar() {
-            if (this.sidebar) this.sidebar.classList.add('mobile-open');
-            if (this.sidebarOverlay) this.sidebarOverlay.classList.add('mobile-open');
+            if (this.sidebar) {
+                this.sidebar.classList.add('mobile-open');
+            }
+            if (this.sidebarOverlay) {
+                this.sidebarOverlay.classList.add('mobile-open');
+            }
             document.body.style.overflow = 'hidden';
         }
 
         closeMobileSidebar() {
-            if (this.sidebar) this.sidebar.classList.remove('mobile-open');
-            if (this.sidebarOverlay) this.sidebarOverlay.classList.remove('mobile-open');
+            if (this.sidebar) {
+                this.sidebar.classList.remove('mobile-open');
+            }
+            if (this.sidebarOverlay) {
+                this.sidebarOverlay.classList.remove('mobile-open');
+            }
             document.body.style.overflow = '';
         }
     }
@@ -266,6 +396,26 @@ document.addEventListener('DOMContentLoaded', function() {
         sidebarManager = new SidebarManager();
     } catch (error) {
         console.log('Sidebar initialization failed:', error);
+    }
+
+    // New: Function to clear current chat without affecting history
+    function clearCurrentChat() {
+        if (chatMessages) {
+            // Clear all messages
+            chatMessages.innerHTML = '';
+            
+            // Add empty state
+            const emptyState = document.createElement('div');
+            emptyState.className = 'empty-chat';
+            emptyState.innerHTML = '<p>No messages yet. Start your conversation!</p>';
+            chatMessages.appendChild(emptyState);
+        }
+        
+        // Clear input
+        if (messageInput) {
+            messageInput.value = '';
+            messageInput.style.height = 'auto';
+        }
     }
     // ===== END SIDEBAR FUNCTIONALITY =====
 
@@ -348,13 +498,20 @@ document.addEventListener('DOMContentLoaded', function() {
         showAILoading();
         
         try {
+            const requestBody = { message: message };
+            
+            // Include conversation ID if we're in an existing conversation
+            if (currentConversationId) {
+                requestBody.conversation_id = currentConversationId;
+            }
+            
             const response = await fetch('/send_message/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRFToken': getCsrfToken()
                 },
-                body: JSON.stringify({ message: message })
+                body: JSON.stringify(requestBody)
             });
             
             const data = await response.json();
@@ -364,6 +521,16 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (data.status === 'success') {
                 addMessage('assistant', data.ai_response);
+                
+                // Update current conversation ID if this is a new conversation
+                if (data.conversation_id && !currentConversationId) {
+                    currentConversationId = data.conversation_id;
+                    
+                    // Refresh sidebar to show new conversation
+                    if (sidebarManager) {
+                        sidebarManager.loadConversationHistory();
+                    }
+                }
             } else {
                 addMessage('assistant', `Error: ${data.message || 'Failed to get response'}`);
             }

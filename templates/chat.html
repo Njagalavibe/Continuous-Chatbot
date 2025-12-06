@@ -25,80 +25,81 @@
             </div>
         </div>
 
-        <!-- Conversation Groups -->
+        <!-- Conversation Groups - DYNAMIC CONTENT -->
         <div class="conversation-groups">
-            <!-- Today -->
-            <div class="conversation-group">
-                <h4 class="group-title">Today</h4>
-                <div class="conversation-list">
-                    <!-- Example conversation card - will be dynamically populated -->
-                    <div class="conversation-card active">
-                        <div class="conversation-preview">
-                            <p class="preview-text">What's the weather like today?</p>
-                        </div>
-                        <div class="conversation-meta">
-                            <span class="conversation-time">2:30 PM</span>
-                            <span class="message-count">3</span>
-                        </div>
+            <!-- Loading State -->
+            <div id="sidebar-loading" class="sidebar-loading">
+                <div class="loading-spinner"></div>
+                <p>Loading conversations...</p>
+            </div>
+
+            <!-- Empty State -->
+            <div id="sidebar-empty" class="sidebar-empty" style="display: none;">
+                <div class="empty-icon">💬</div>
+                <p>No conversations yet</p>
+                <p class="empty-subtitle">Start a chat to see your history here</p>
+            </div>
+
+            <!-- Dynamic Conversation Groups Will Be Inserted Here -->
+            <div id="conversation-groups-container">
+                <!-- Today Group -->
+                <div class="conversation-group" data-group="today">
+                    <h4 class="group-title" data-group-name="Today">
+                        Today
+                        <svg class="group-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                            <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </h4>
+                    <div class="conversation-list">
+                        <!-- Dynamic today conversations will be inserted here -->
+                    </div>
+                </div>
+
+                <!-- Yesterday Group -->
+                <div class="conversation-group" data-group="yesterday">
+                    <h4 class="group-title" data-group-name="Yesterday">
+                        Yesterday
+                        <svg class="group-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                            <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </h4>
+                    <div class="conversation-list">
+                        <!-- Dynamic yesterday conversations will be inserted here -->
+                    </div>
+                </div>
+
+                <!-- Last 7 Days Group -->
+                <div class="conversation-group" data-group="last_7_days">
+                    <h4 class="group-title" data-group-name="Last 7 Days">
+                        Last 7 Days
+                        <svg class="group-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                            <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </h4>
+                    <div class="conversation-list">
+                        <!-- Dynamic last 7 days conversations will be inserted here -->
+                    </div>
+                </div>
+
+                <!-- Older Group -->
+                <div class="conversation-group" data-group="older">
+                    <h4 class="group-title" data-group-name="Older">
+                        Older
+                        <svg class="group-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                            <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </h4>
+                    <div class="conversation-list">
+                        <!-- Dynamic older conversations will be inserted here -->
                     </div>
                 </div>
             </div>
 
-            <!-- Yesterday -->
-            <div class="conversation-group">
-                <h4 class="group-title">Yesterday</h4>
-                <div class="conversation-list">
-                    <div class="conversation-card">
-                        <div class="conversation-preview">
-                            <p class="preview-text">Can you help me with Python programming?</p>
-                        </div>
-                        <div class="conversation-meta">
-                            <span class="conversation-time">4:15 PM</span>
-                            <span class="message-count">12</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Last 7 Days -->
-            <div class="conversation-group">
-                <h4 class="group-title">Last 7 Days</h4>
-                <div class="conversation-list">
-                    <div class="conversation-card">
-                        <div class="conversation-preview">
-                            <p class="preview-text">Explain quantum computing in simple terms</p>
-                        </div>
-                        <div class="conversation-meta">
-                            <span class="conversation-time">Mon</span>
-                            <span class="message-count">8</span>
-                        </div>
-                    </div>
-                    <div class="conversation-card">
-                        <div class="conversation-preview">
-                            <p class="preview-text">Recipe for chocolate chip cookies</p>
-                        </div>
-                        <div class="conversation-meta">
-                            <span class="conversation-time">Sat</span>
-                            <span class="message-count">5</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Older -->
-            <div class="conversation-group">
-                <h4 class="group-title">Older</h4>
-                <div class="conversation-list">
-                    <div class="conversation-card">
-                        <div class="conversation-preview">
-                            <p class="preview-text">Travel recommendations for Japan</p>
-                        </div>
-                        <div class="conversation-meta">
-                            <span class="conversation-time">Mar 15</span>
-                            <span class="message-count">15</span>
-                        </div>
-                    </div>
-                </div>
+            <!-- No Search Results -->
+            <div id="no-search-results" class="no-search-results" style="display: none;">
+                <div class="no-results-icon">🔍</div>
+                <p>No conversations found</p>
+                <p class="no-results-subtitle">Try different search terms</p>
             </div>
         </div>
 
