@@ -106,3 +106,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # DeepSeek API Configuration
 DEEPSEEK_API_KEY = os.getenv('DEEPSEEK_API_KEY')
+
+# Authentication settings
+LOGIN_URL = 'login'  # Where to go if not logged in
+LOGIN_REDIRECT_URL = '/'  # Redirect to homepage after login
+LOGOUT_REDIRECT_URL = 'login'  # Redirect to homepage after logout
+
+# Session settings
+SESSION_SAVE_EVERY_REQUEST = True      # Extend session on activity

@@ -23,19 +23,7 @@ def home(request):
         })
     else:
         return render(request, 'home.html')
-
-#user registration view
-def register(request):
-    if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            # Conversation auto-created by our signal
-            login(request, user)
-            return redirect('home')
-    else:
-        form = UserCreationForm()
-    return render(request, 'regester.html', {'form': form})
+    
 
 #api endpoint to send and receive messages
 @csrf_exempt

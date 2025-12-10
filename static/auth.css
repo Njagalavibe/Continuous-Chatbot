@@ -1,0 +1,469 @@
+/* ===== AUTHENTICATION PAGE STYLES ===== */
+/* 1. BASE LAYOUT & CONTAINER STYLES 
+   2. Center everything on the page */
+
+
+.auth-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.auth-container {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+    margin-bottom: 30px;
+
+}
+
+/* 2. TWO BUTTON CHOICE SECTION (Initial View) */
+.auth-choice-section {
+    text-align: center;
+    background: white;
+    border-radius: 12px;
+    padding: 40px 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e0e0e0;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.auth-choice-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 8px;
+}
+
+.auth-choice-subtitle {
+    font-size: 16px;
+    color: #6c757d;
+    margin-bottom: 30px;
+}
+
+/* Button container */
+.auth-choice-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Main buttons */
+.auth-choice-btn {
+    padding: 16px 24px;
+    font-size: 18px;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: block;
+    width: 100%;
+    text-align: center;
+}
+
+/* Primary (Register) button */
+.auth-choice-btn--primary {
+    background: linear-gradient(135deg, #242827 0%, #2c3533 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(36, 40, 39, 0.2);
+}
+
+.auth-choice-btn--primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(36, 40, 39, 0.3);
+}
+
+/* Secondary (Login) button */
+.auth-choice-btn--secondary {
+    background: white;
+    color: #242827;
+    border: 2px solid #242827;
+}
+
+.auth-choice-btn--secondary:hover {
+    background: #242827;
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* "or" separator */
+.auth-choice-divider {
+    position: relative;
+    margin: 20px 0;
+    text-align: center;
+}
+
+.auth-choice-divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #dee2e6;
+}
+
+.auth-choice-divider-text {
+    position: relative;
+    display: inline-block;
+    padding: 0 12px;
+    background: white;
+    color: #6c757d;
+    font-size: 14px;
+}
+
+/* 3. FORMS CONTAINER (Hidden initially) */
+.auth-forms-container {
+    width: 100%;
+    animation: slideUp 0.4s ease-out;
+}
+
+/* Back button */
+.auth-back-btn {
+    background: none;
+    border: none;
+    color: #6c757d;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 8px 0;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 0.2s ease;
+}
+
+.auth-back-btn:hover {
+    color: #242827;
+}
+
+/* Form cards */
+.auth-form-card {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e0e0e0;
+    animation: slideUp 0.4s ease-out;
+}
+
+.auth-form-content {
+    /* Form card content wrapper */
+}
+
+.auth-form-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 8px;
+}
+
+.auth-form-subtitle {
+    font-size: 15px;
+    color: #6c757d;
+    margin-bottom: 25px;
+}
+
+/* 4. FORM ELEMENT STYLES */
+/* Form container */
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Form groups */
+.auth-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* Labels */
+.auth-form-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+/* Input fields */
+.auth-form-input[type="text"],
+.auth-form-input[type="password"] {
+    padding: 14px 16px;
+    font-size: 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.auth-form-input:focus {
+    outline: none;
+    border-color: #242827;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(36, 40, 39, 0.1);
+}
+
+/* Placeholder text */
+.auth-form-input::placeholder {
+    color: #adb5bd;
+}
+
+/* Error messages */
+.auth-form-error {
+    color: #dc3545;
+    font-size: 13px;
+    margin-top: 4px;
+}
+
+/* Helper text */
+.auth-form-help {
+    font-size: 13px;
+    color: #6c757d;
+    margin-top: 4px;
+}
+
+/* Checkbox for "Remember me" */
+.auth-form-checkbox[type="checkbox"] {
+    margin-right: 8px;
+    width: 18px;
+    height: 18px;
+}
+
+.auth-form-checkbox-label {
+    font-weight: normal;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+}
+
+/* Submit buttons */
+.auth-form-submit {
+    padding: 16px;
+    font-size: 17px;
+    font-weight: 600;
+    background: linear-gradient(135deg, #242827 0%, #2c3533 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+
+.auth-form-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(36, 40, 39, 0.3);
+}
+
+/* 5. MESSAGES & ALERTS */
+/* Django messages */
+.auth-message {
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Success messages */
+.auth-message--success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+/* Error messages */
+.auth-message--error,
+.auth-message--danger {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Close button for alerts */
+.auth-message-close {
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: inherit;
+    opacity: 0.7;
+    cursor: pointer;
+    padding: 0 0 0 10px;
+}
+
+.auth-message-close:hover {
+    opacity: 1;
+}
+
+/* 6. ANIMATIONS & TRANSITIONS */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 7. RESPONSIVE DESIGN */
+/* Tablet */
+@media (max-width: 768px) {
+    .auth-container {
+        max-width: 90%;
+    }
+    
+    .auth-choice-section {
+        padding: 30px 20px;
+    }
+    
+    .auth-choice-title {
+        font-size: 24px;
+    }
+    
+    .auth-form-card {
+        padding: 25px 20px;
+    }
+    
+    .auth-form-title {
+        font-size: 22px;
+    }
+    
+    .auth-choice-btn {
+        padding: 14px 20px;
+        font-size: 16px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+    .auth-page {
+        padding: 15px;
+    }
+    
+    .auth-choice-section {
+        padding: 25px 15px;
+        border-radius: 10px;
+    }
+    
+    .auth-choice-title {
+        font-size: 22px;
+    }
+    
+    .auth-choice-subtitle {
+        font-size: 14px;
+    }
+    
+    .auth-form-card {
+        padding: 20px 15px;
+    }
+    
+    .auth-form-title {
+        font-size: 20px;
+    }
+    
+    .auth-form-input[type="text"],
+    .auth-form-input[type="password"] {
+        padding: 12px 14px;
+        font-size: 15px;
+    }
+    
+    .auth-form-submit {
+        padding: 14px;
+        font-size: 16px;
+    }
+}
+
+/* 8. LOADING STATES */
+/* Form submission loading */
+.form-submitting {
+    position: relative;
+    pointer-events: none;
+}
+
+.form-submitting::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: formSpinner 0.8s linear infinite;
+}
+
+@keyframes formSpinner {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* 9. ACCESSIBILITY */
+/* Focus styles for keyboard navigation */
+.auth-choice-btn:focus,
+.auth-form-input:focus,
+.auth-form-submit:focus,
+.auth-back-btn:focus {
+    outline: 2px solid #242827;
+    outline-offset: 2px;
+}
+
+/* High contrast support */
+@media (prefers-contrast: high) {
+    .auth-form-input[type="text"],
+    .auth-form-input[type="password"] {
+        border-width: 2px;
+    }
+    
+    .auth-choice-btn {
+        border-width: 2px;
+    }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .auth-choice-btn,
+    .auth-form-submit,
+    .auth-form-input,
+    .auth-back-btn {
+        transition: none;
+    }
+    
+    .auth-choice-section,
+    .auth-form-card,
+    .auth-forms-container {
+        animation: none;
+    }
+}
+
+/* Additional utility class for checkbox group */
+.auth-form-checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}

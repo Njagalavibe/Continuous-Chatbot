@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Authentication - Register or Login{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'auth.css' %}">
+{% endblock %}
+
+
+{% block content %}
+<div class="auth-page">
+    <div class="auth-container">
+        <div class="auth-wrapper">
+            <!-- Two Button Choice -->
+            <div class="auth-choice-section">
+                <h1 class="auth-choice-title">Get Started</h1>
+                <p class="auth-choice-subtitle">Choose how you'd like to continue</p>
+                
+                <div class="auth-choice-buttons">
+                    <button type="button" id="show-register-btn" class="auth-choice-btn auth-choice-btn--primary">
+                        Create New Account
+                    </button>
+                    
+                    <div class="auth-choice-divider">
+                        <span class="auth-choice-divider-text">or</span>
+                    </div>
+                    
+                    <button type="button" id="show-login-btn" class="auth-choice-btn auth-choice-btn--secondary">
+                        Login to Existing Account
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Forms Container (Hidden) -->
+            <div id="auth-forms-container" class="auth-forms-container" hidden>
+                
+                <!-- Back to Choice Button -->
+                <div class="auth-back-container">
+                    <button type="button" id="back-to-choice-btn" class="auth-back-btn">
+                        ← Back to choices
+                    </button>
+                </div>
+                
+                <!-- Register Form -->
+                <div id="register-form-card" class="auth-form-card">
+                    <div class="auth-form-content">
+                        <h2 class="auth-form-title">Create Your Account</h2>
+                        <p class="auth-form-subtitle">Join our community and start chatting</p>
+                        
+                        <form method="post" action="{% url 'register' %}" id="register-form" class="auth-form">
+                            {% csrf_token %}
+                            
+                            <!-- Django Messages -->
+                            {% if messages %}
+                                {% for message in messages %}
+                                    <div class="auth-message auth-message--{{ message.tags }}">
+                                        {{ message }}
+                                        <button type="button" class="auth-message-close">×</button>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                            
+                            <!-- Username -->
+                            <div class="auth-form-group">
+                                <label for="id_username" class="auth-form-label">Username</label>
+                                <input type="text" name="username" id="id_username" 
+                                       placeholder="Choose a username" required
+                                       value="{{ form.username.value|default:'' }}" class="auth-form-input">
+                                {% if form.username.errors %}
+                                    <div class="auth-form-error">{{ form.username.errors.0 }}</div>
+                                {% endif %}
+                                <small class="auth-form-help">Letters, digits and @/./+/-/_ only.</small>
+                            </div>
+                            
+                            <!-- Password -->
+                            <div class="auth-form-group">
+                                <label for="id_password1" class="auth-form-label">Password</label>
+                                <input type="password" name="password1" id="id_password1" 
+                                       placeholder="Create a password" required class="auth-form-input">
+                                {% if form.password1.errors %}
+                                    <div class="auth-form-error">{{ form.password1.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Confirm Password -->
+                            <div class="auth-form-group">
+                                <label for="id_password2" class="auth-form-label">Confirm Password</label>
+                                <input type="password" name="password2" id="id_password2" 
+                                       placeholder="Confirm your password" required class="auth-form-input">
+                                {% if form.password2.errors %}
+                                    <div class="auth-form-error">{{ form.password2.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <button type="submit" class="auth-form-submit">
+                                Create Account
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Login Form -->
+                <div id="login-form-card" class="auth-form-card" hidden>
+                    <div class="auth-form-content">
+                        <h2 class="auth-form-title">Welcome Back</h2>
+                        <p class="auth-form-subtitle">Sign in to continue your conversations</p>
+                        
+                        <form method="post" action="{% url 'login' %}" id="login-form" class="auth-form">
+                            {% csrf_token %}
+                            
+                            <!-- Include next parameter -->
+                            {% if request.GET.next %}
+                                <input type="hidden" name="next" value="{{ request.GET.next }}">
+                            {% endif %}
+                            
+                            <!-- Error display -->
+                            {% if form.errors and not form.username.errors %}
+                                <div class="auth-message auth-message--error">
+                                    Invalid username or password. Please try again.
+                                    <button type="button" class="auth-message-close">×</button>
+                                </div>
+                            {% endif %}
+                            
+                            <!-- Username -->
+                            <div class="auth-form-group">
+                                <label for="login_username" class="auth-form-label">Username</label>
+                                <input type="text" name="username" id="login_username" 
+                                       placeholder="Enter your username" required
+                                       value="{{ form.username.value|default:'' }}" class="auth-form-input">
+                            </div>
+                            
+                            <!-- Password -->
+                            <div class="auth-form-group">
+                                <label for="login_password" class="auth-form-label">Password</label>
+                                <input type="password" name="password" id="login_password" 
+                                       placeholder="Enter your password" required class="auth-form-input">
+                            </div>
+                            
+                            <!-- Remember Me -->
+                            <div class="auth-form-checkbox-group">
+                                <input type="checkbox" id="remember_me" name="remember" class="auth-form-checkbox">
+                                <label for="remember_me" class="auth-form-checkbox-label">Remember me</label>
+                            </div>
+                            
+                            <button type="submit" class="auth-form-submit">
+                                Sign In
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                
+            </div> <!-- End auth-forms-container -->
+            
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+
+<script src="{% static 'auth.js' %}"></script>
+
+{% endblock %}

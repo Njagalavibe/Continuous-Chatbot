@@ -13,7 +13,10 @@
     <!-- Our Custom CSS -->
     {% load static %}
     <link href="{% static 'styles.css' %}" rel="stylesheet">
-    <link href="{% static 'profile_dropdown.css' %}" rel="stylesheet">
+
+      <!-- Page-specific CSS -->
+    {% block extra_css %}{% endblock %}
+   
 </head>
 <body>
     <!-- Sticky Navbar -->
@@ -84,12 +87,14 @@
                         </a>
 
                         <div class="dropdown-divider"></div>
-
                         <!-- Logout Item with Bootstrap Box Arrow Right Icon -->
-                        <a href="{% url 'logout' %}" class="dropdown-item logout-item">
-                            <i class="bi bi-box-arrow-right dropdown-icon me-2"></i>
-                            Logout
-                        </a>
+                        <form method="post" action="{% url 'logout' %}" class="logout-form">
+                            {% csrf_token %}
+                            <button type="submit" class="dropdown-item logout-item">
+                                <i class="bi bi-box-arrow-right dropdown-icon me-2"></i>
+                                Logout
+                            </button>
+                        </form>
                     </div>
                 </div>
             {% endif %}
@@ -104,10 +109,13 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Profile Dropdown JavaScript -->
-    <script src="{% static 'profile_dropdown.js' %}"></script>
-
-    {% block scripts %}
-    {% endblock %}
+   <!-- Global JavaScript (loaded on EVERY page) -->
+    <script src="{% static 'base.js' %}"></script>
+    
+    <!-- Page-specific JavaScript -->
+    {% block extra_js %}{% endblock %}
+    
+    <!-- Legacy scripts block (for backward compatibility) -->
+    {% block scripts %}{% endblock %}
 </body>
 </html>
