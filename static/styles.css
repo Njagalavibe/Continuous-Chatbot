@@ -677,7 +677,7 @@ html, body {
 
 .ai-loading-indicator .message-content {
     background: white;
-    color: #2c3e50;
+    color: #323232;
     border-bottom-left-radius: 0.5rem;
     border: 1px solid #e9ecef;
     padding: 1rem 1.25rem;
@@ -696,7 +696,7 @@ html, body {
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #00ffff, #00b389);
+    background: linear-gradient(135deg, #252525, #a7a7a7);
     animation: loading-dots 1.4s ease-in-out infinite both;
 }
 

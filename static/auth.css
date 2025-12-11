@@ -151,10 +151,10 @@
     border: 1px solid #e0e0e0;
     animation: slideUp 0.4s ease-out;
 }
-
+/*
 .auth-form-content {
-    /* Form card content wrapper */
-}
+    
+}*/
 
 .auth-form-title {
     font-size: 24px;

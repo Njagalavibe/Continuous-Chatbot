@@ -6,6 +6,11 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 from .models import Conversation, Message
 from .services import DeepSeekService 
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_http_methods
+from django.utils import timezone
+from datetime import timedelta
+
 
 # Home view - if authenticated, show chat interface
 def home(request):
@@ -120,12 +125,8 @@ def get_messages(request):
     
     return JsonResponse({'status': 'error', 'message': 'Unauthorized'})
 
-# Add the conversation history endpoints from our previous work
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_http_methods
-from django.utils import timezone
-from datetime import timedelta
 
+# Helper function to format datetime for display
 def get_time_display(dt):
     """Convert datetime to display format for sidebar"""
     now = timezone.now()

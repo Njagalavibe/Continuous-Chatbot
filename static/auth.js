@@ -95,9 +95,7 @@
         return document.querySelector('.auth-page') !== null;
     }
     
-    /**
-      Bind all event listeners
-     */
+    //Bind all event listeners
     function bindEvents() {
         // Choice buttons
         if (DOM.showRegisterBtn) {

@@ -3,6 +3,7 @@ from django.urls import path
 from . import views  # Your main views (home, chat functions)
 from .auth_views import auth_page, register_view, login_view  # New auth views
 from django.contrib.auth import views as django_auth_views  # Django's built-in auth
+from . import settings_views  # Import settings views
 
 urlpatterns = [
     # Home/Chat URLs
@@ -14,11 +15,21 @@ urlpatterns = [
     path('auth/', auth_page, name='auth'),  # Shows the page with two buttons (shows auth.html)
     path('auth/register/', register_view, name='register'),  # Handles register form
     path('auth/login/', login_view, name='login'),  # Handles login form
-    path('auth/logout/', django_auth_views.LogoutView.as_view(next_page='auth_page'), name='logout'),
+    path('auth/logout/', django_auth_views.LogoutView.as_view(next_page='auth'), name='logout'),
     
     # Conversation History URLs
     path('api/conversations/history/', views.conversation_history, name='conversation_history'),
     path('api/conversations/<int:conversation_id>/', views.get_conversation, name='get_conversation'),
     path('api/conversations/create/', views.create_conversation, name='create_conversation'),
     path('api/conversations/<int:conversation_id>/delete/', views.delete_conversation, name='delete_conversation'),
+
+
+    # Settings URLs
+    path('settings/general/',settings_views.general_view,name='general_settings'),# General settings page
+    path('settings/contact/',settings_views.contact_view,name='contact_settings'),# Contact form page
+    path('settings/help/',settings_views.help_view,name='help_center'),# Help center page
+    
+    # We shall also add a direct modal endpoint later if needed:
+    # path('settings/modal/', settings_views.settings_modal_view, name='settings_modal'),
+
 ]
