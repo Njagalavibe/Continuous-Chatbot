@@ -328,7 +328,7 @@ html, body {
 
 .new-chat-btn:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(4, 207, 176, 0.3);
+    box-shadow: 0 4px 12px rgba(99, 99, 99, 0.3);
 }
 
 /* Main Chat Area */
@@ -373,7 +373,7 @@ html, body {
     margin: 0;
     font-size: 1.125rem;
     font-weight: 600;
-    color: #2c3e50;
+    color: #4a4a4a;
 }
 
 /* Mobile Sidebar Overlay - FIXED Z-INDEX */
@@ -387,8 +387,6 @@ html, body {
     background: rgba(0, 0, 0, 0.5);
     z-index: 1009; /* Below sidebar but above everything else */
 }
-
-/* ===== EXISTING CHAT STYLES (MAINTAINED) ===== */
 
 /* Sticky Navbar */
 .sticky-navbar {
@@ -462,7 +460,7 @@ html, body {
 }
 
 .text-input::placeholder {
-    color: #6c757d;
+    color: #b0b0b0;
 }
 
 .input-buttons {
@@ -517,7 +515,7 @@ html, body {
 
 .paste-btn:not(:disabled):hover {
     background: #f8f9fa;
-    color: #00b389;
+    color: #2c2c2c;
 }
 
 .text-input::-webkit-scrollbar {
@@ -556,7 +554,7 @@ html, body {
 .message-content {
     padding: 0.875rem 1.125rem;
     border-radius: 1.125rem;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    
     line-height: 1.4;
     word-wrap: break-word;
     overflow-wrap: break-word;
@@ -564,14 +562,14 @@ html, body {
 }
 
 .user-message .message-content {
-    background: linear-gradient(135deg, #dadbdc, #c5c6c7);
-    color: white;
+    background-color:#eaeaeb;
+    color: rgb(5, 5, 5);
     border-bottom-right-radius: 0.5rem;
 }
 
 .assistant-message .message-content {
     background: white;
-    color: #2c3e50;
+    color: #181818;
     border-bottom-left-radius: 0.5rem;
     border: 1px solid #e9ecef;
 }
@@ -652,7 +650,7 @@ html, body {
 }
 
 .copy-btn.active {
-    color: #007bff;
+    color: #72efaf;
     background: rgba(0, 123, 255, 0.1);
 }
 
@@ -661,7 +659,7 @@ html, body {
 }
 
 .copy-btn.copied {
-    color: #28a745;
+    color:#72efaf;
     background: rgba(40, 167, 69, 0.1);
 }
 
@@ -735,13 +733,13 @@ html, body {
     font-size: 1.1rem;
 }
 
-/* Removed old input styles */
+/* Removed old input styles 
 .input-group,
 .form-control,
 .input-area-wrapper,
 .text-input-container {
     display: none;
-}
+}*/
 
 /* Utility classes */
 .btn {
@@ -754,13 +752,13 @@ html, body {
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #00ffff, #00b389);
+    background: linear-gradient(135deg, #343434, #1f1f1f);
     color: white;
 }
 
 .btn-primary:hover:not(:disabled) {
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(4, 207, 176, 0.3);
+    box-shadow: 0 4px 12px rgba(59, 59, 59, 0.3);
 }
 
 .btn:disabled {

@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.core.mail import send_mail
 from django.conf import settings as django_settings
 from .models import UserSettings, ContactMessage
+from django.contrib.auth import logout
 
 @login_required
 def general_view(request):
@@ -21,7 +22,7 @@ def general_view(request):
         user_settings.save()
         
         messages.success(request, 'General settings saved successfully!')
-        return redirect('chatBot:general_settings')
+        return redirect('general_settings')
     
     # Pass the choices to template for rendering dropdowns
     return render(request, 'settings/general.html', {
@@ -64,7 +65,7 @@ def contact_view(request):
             )
             
             messages.success(request, 'Thank you! Your message has been received and saved. The admin will review it shortly.')
-            return redirect('chatBot:contact_settings')  # Clear the form on success
+            return redirect('contact_settings')  # Clear the form on success
     
     # If GET request or failed validation, show the form again
     return render(request, 'settings/contact.html')
@@ -106,4 +107,41 @@ def help_view(request):
     return render(request, 'settings/help.html', {
         'faq_items': faq_items,
         'categories': set(item['category'] for item in faq_items)
+    })
+
+@login_required
+def account_view(request):
+    """
+    Account settings page with password change and account deletion
+    """
+    # Handle account deletion (POST request)
+    if request.method == 'POST' and 'delete_account' in request.POST:
+        username_to_confirm = request.POST.get('username_confirm', '').strip()
+        
+        # Verify username matches
+        if username_to_confirm == request.user.username:
+            # Store username for success message
+            username = request.user.username
+            
+            # Logout user first
+            user = request.user
+            logout(request)
+            
+            # Delete the user account
+            user.delete()
+            
+            # Show success message
+            messages.success(request, f'Account "{username}" has been permanently deleted.')
+            return redirect('home')  # Goes to your home page
+            
+        else:
+            # Username doesn't match - show error
+            messages.error(request, 'Username does not match. Account not deleted.')
+            return redirect('account_settings')
+    
+    # If GET request or password changed successfully
+    password_changed = request.GET.get('password_changed') == 'true'
+    
+    return render(request, 'settings/account.html', {
+        'password_changed': password_changed,
     })

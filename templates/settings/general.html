@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-4">
+    <h2 class="mb-4">General Settings</h2>
+    
+    <!-- Messages will appear here and can be dismissed -->
+    {% if messages %}
+    <div class="messages mb-4">
+        {% for message in messages %}
+        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} 
+                    alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <div class="card">
+        <div class="card-body">
+            <form method="post" class="settings-form">
+                {% csrf_token %}
+                
+                <!-- Theme Selection -->
+                <div class="mb-4">
+                    <h5 class="mb-3">Appearance</h5>
+                    <div class="mb-3">
+                        <label for="theme" class="form-label fw-bold">Theme</label>
+                        <select name="theme" id="theme" class="form-select">
+                            {% for value, label in theme_choices %}
+                            <option value="{{ value }}" 
+                                {% if user_settings.theme == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <div class="form-text">Choose your preferred interface theme.</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="language" class="form-label fw-bold">Language</label>
+                        <select name="language" id="language" class="form-select">
+                            {% for value, label in language_choices %}
+                            <option value="{{ value }}"
+                                {% if user_settings.language == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <div class="form-text">Select your preferred language for the interface.</div>
+                    </div>
+                </div>
+                
+                <!-- Submit Button -->
+                <div class="d-flex justify-content-end mt-4">
+                    <button type="submit" class="btn btn-primary px-4">
+                        Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

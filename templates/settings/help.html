@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-4">
+    <h2 class="mb-4"> Help Center</h2>
+    
+    <!-- Quick Alert -->
+    <div class="alert alert-info mb-4">
+        Can't find what you need? 
+        <a href="{% url 'contact_settings' %}" class="alert-link">Contact our support team</a>.
+    </div>
+    
+    <!-- FAQ Accordion -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h4 class="card-title mb-4">Frequently Asked Questions</h4>
+            
+            <div class="accordion" id="faqAccordion">
+                <!-- FAQ Item 1 -->
+                <div class="accordion-item">
+                    <h3 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" 
+                                data-bs-toggle="collapse" data-bs-target="#faq1">
+                            How does the AI assistant work?
+                        </button>
+                    </h3>
+                    <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Our app connects to DeepSeek's AI API. You type questions or prompts, 
+                            and the AI generates responses based on its training.
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- FAQ Item 2 -->
+                <div class="accordion-item">
+                    <h3 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" 
+                                data-bs-toggle="collapse" data-bs-target="#faq2">
+                            Can I change how the AI responds?
+                        </button>
+                    </h3>
+                    <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Currently, you can adjust the interface theme and language in 
+                            <a href="{% url 'general_settings' %}">General Settings</a>.
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- FAQ Item 3 -->
+                <div class="accordion-item">
+                    <h3 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" 
+                                data-bs-toggle="collapse" data-bs-target="#faq3">
+                            Is there a limit to how much I can use the AI?
+                        </button>
+                    </h3>
+                    <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Usage may be subject to rate limits based on our API subscription. 
+                            If you encounter frequent limits, please contact us.
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- FAQ Item 4 -->
+                <div class="accordion-item">
+                    <h3 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" 
+                                data-bs-toggle="collapse" data-bs-target="#faq4">
+                            How do I report inappropriate AI responses?
+                        </button>
+                    </h3>
+                    <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Please use the <a href="{% url 'contact_settings' %}">Contact form</a> 
+                            and include the exact prompt and the AI's response.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

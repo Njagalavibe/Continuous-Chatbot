@@ -20,9 +20,19 @@
 </head>
 <body>
     <!-- Sticky Navbar -->
-    <nav class="navbar navbar-dark bg-dark sticky-navbar">
-        <div class="container">
+   <nav class="navbar navbar-dark bg-dark sticky-navbar">
+    <div class="container">
+        <!-- ChatBot text/logo - NOW A LINK WHEN LOGGED IN -->
+        {% if user.is_authenticated %}
+            <!-- Link to chat page -->
+            <a href="{% url 'home' %}" class="navbar-brand" style="cursor: pointer; text-decoration: none;">
+                chatBot
+            </a>
+        {% else %}
+            <!-- Plain text when not logged in -->
             <span class="navbar-brand">chatBot</span>
+        {% endif %}
+        
             {% if user.is_authenticated %}
                 <div class="profile-container">
                     <!-- Horizontal Layout: Profile Picture + Username + Three Dots -->
@@ -67,23 +77,25 @@
                                 {% endif %}
                             </div>
                             <div class="dropdown-userinfo">
+                                 <a href="{% url 'account_settings' %}">
                                 <div class="user-name">{{ user.get_full_name|default:user.username }}</div>
                                 <div class="user-email">{{ user.email }}</div>
+                                 </a>
                             </div>
                         </div>
 
                         <div class="dropdown-divider"></div>
 
                         <!-- Settings Item with Bootstrap Gear Icon -->
-                        <a href="#" class="dropdown-item">
+                        <a href="{% url 'general_settings' %}" class="dropdown-item">
                             <i class="bi bi-gear-fill dropdown-icon me-2"></i>
                             Settings
                         </a>
 
                         <!-- Contact Support Item with Bootstrap Chat Icon -->
-                        <a href="#" class="dropdown-item">
+                        <a href="{% url 'contact_settings' %}" class="dropdown-item">
                             <i class="bi bi-chat-left-dots-fill dropdown-icon me-2"></i>
-                            Contact Support
+                            Contact
                         </a>
 
                         <div class="dropdown-divider"></div>

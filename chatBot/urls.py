@@ -28,7 +28,9 @@ urlpatterns = [
     path('settings/general/',settings_views.general_view,name='general_settings'),# General settings page
     path('settings/contact/',settings_views.contact_view,name='contact_settings'),# Contact form page
     path('settings/help/',settings_views.help_view,name='help_center'),# Help center page
-    
+    path('settings/account/',settings_views.account_view,name='account_settings'),# Account settings page
+    path('settings/account/password-change/', django_auth_views.PasswordChangeView.as_view(template_name='settings/password_change.html',
+    success_url='/settings/account/?password_changed=true'), name='password_change'),# Password change page
     # We shall also add a direct modal endpoint later if needed:
     # path('settings/modal/', settings_views.settings_modal_view, name='settings_modal'),
 
