@@ -1177,13 +1177,13 @@ html, body {
     overflow: hidden;
 }
 
-/* Show dropdown when hovering over the profile area */
+/* Show dropdown when hovering over the profile area 
 .profile-container:hover .profile-dropdown,
 .nav-profile-display:hover .profile-dropdown,
 .nav-dots-trigger:hover ~ .profile-dropdown,
 .profile-dropdown:hover {
     display: block;
-}
+}*/
 
 /* Dropdown header styling (already exists, but ensure it works) */
 .dropdown-header {

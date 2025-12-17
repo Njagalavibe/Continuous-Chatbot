@@ -35,7 +35,7 @@
 
             <!-- Empty State -->
             <div id="sidebar-empty" class="sidebar-empty" style="display: none;">
-                <div class="empty-icon">💬</div>
+                <div class="empty-icon"></div>
                 <p>No conversations yet</p>
                 <p class="empty-subtitle">Start a chat to see your history here</p>
             </div>
@@ -97,7 +97,7 @@
 
             <!-- No Search Results -->
             <div id="no-search-results" class="no-search-results" style="display: none;">
-                <div class="no-results-icon">🔍</div>
+                <div class="no-results-icon"></div>
                 <p>No conversations found</p>
                 <p class="no-results-subtitle">Try different search terms</p>
             </div>
@@ -230,6 +230,5 @@
 
 {% block scripts %}
 <!-- Load JavaScript files-->
-<script src="{% static 'base.js' %}"></script>
 <script src="{% static 'chat.js' %}"></script>
 {% endblock %}

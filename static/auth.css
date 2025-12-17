@@ -16,7 +16,7 @@
 .auth-container {
     width: 100%;
     max-width: 400px;
-    margin: 0 auto;
+    margin:  auto!important;
     margin-bottom: 30px;
 
 }
@@ -26,7 +26,7 @@
     text-align: center;
     background: white;
     border-radius: 12px;
-    padding: 40px 30px;
+    padding: 20px 30px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     border: 1px solid #e0e0e0;
     animation: fadeIn 0.5s ease-out;
@@ -37,19 +37,16 @@
     font-weight: 700;
     color: #2c3e50;
     margin-bottom: 8px;
+    margin-top: 10px!important;
 }
 
-.auth-choice-subtitle {
-    font-size: 16px;
-    color: #6c757d;
-    margin-bottom: 30px;
-}
+
 
 /* Button container */
 .auth-choice-buttons {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 10px;
 }
 
 /* Main buttons */
@@ -94,7 +91,7 @@
 /* "or" separator */
 .auth-choice-divider {
     position: relative;
-    margin: 20px 0;
+    margin: 5px 0!important;
     text-align: center;
 }
 
@@ -131,7 +128,6 @@
     font-size: 14px;
     cursor: pointer;
     padding: 8px 0;
-    margin-bottom: 20px;
     display: flex;
     align-items: center;
     gap: 6px;
@@ -146,10 +142,11 @@
 .auth-form-card {
     background: white;
     border-radius: 12px;
-    padding: 30px;
+    padding: 15px 20px!important;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     border: 1px solid #e0e0e0;
     animation: slideUp 0.4s ease-out;
+
 }
 /*
 .auth-form-content {
@@ -163,18 +160,12 @@
     margin-bottom: 8px;
 }
 
-.auth-form-subtitle {
-    font-size: 15px;
-    color: #6c757d;
-    margin-bottom: 25px;
-}
 
 /* 4. FORM ELEMENT STYLES */
 /* Form container */
 .auth-form {
     display: flex;
     flex-direction: column;
-    gap: 20px;
 }
 
 /* Form groups */
@@ -182,6 +173,7 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
+    margin-bottom: 10px;
 }
 
 /* Labels */
@@ -194,7 +186,7 @@
 /* Input fields */
 .auth-form-input[type="text"],
 .auth-form-input[type="password"] {
-    padding: 14px 16px;
+    padding: 8px 16px!important;
     font-size: 16px;
     border: 2px solid #e0e0e0;
     border-radius: 8px;
@@ -205,10 +197,13 @@
 }
 
 .auth-form-input:focus {
-    outline: none;
+    
     border-color: #242827;
     background: white;
-    box-shadow: 0 0 0 3px rgba(36, 40, 39, 0.1);
+    outline: none !important; /* Ensure no outline */
+    box-shadow: none; /* Remove any box-shadow if present */
+   
+    
 }
 
 /* Placeholder text */
@@ -227,7 +222,7 @@
 .auth-form-help {
     font-size: 13px;
     color: #6c757d;
-    margin-top: 4px;
+    
 }
 
 /* Checkbox for "Remember me" */
@@ -246,7 +241,7 @@
 
 /* Submit buttons */
 .auth-form-submit {
-    padding: 16px;
+    padding: 12px;
     font-size: 17px;
     font-weight: 600;
     background: linear-gradient(135deg, #242827 0%, #2c3533 100%);
@@ -255,7 +250,7 @@
     border-radius: 10px;
     cursor: pointer;
     transition: all 0.3s ease;
-    margin-top: 10px;
+    margin-top: 14px;
 }
 
 .auth-form-submit:hover {

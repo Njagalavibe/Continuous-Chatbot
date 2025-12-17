@@ -43,10 +43,10 @@ def register_view(request):
             'login_form': login_form,
             'show_form': 'register',  # Tell template to show register form
         }
-        return render(request, 'auth/auth.html', context)
+        return render(request, 'auth', context)
     
     # GET request should redirect to main auth page
-    return redirect('auth_page')
+    return redirect('auth')
 
 # Login view
 def login_view(request):
@@ -67,7 +67,7 @@ def login_view(request):
             'login_form': form,  # Form with errors
             'show_form': 'login',  # Tell template to show login form
         }
-        return render(request, 'auth/auth.html', context)
+        return render(request, 'auth', context)
     
     # GET request should redirect to main auth page
-    return redirect('auth_page')
+    return redirect('auth')
