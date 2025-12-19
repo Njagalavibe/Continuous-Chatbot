@@ -4,10 +4,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const sendBtn = document.getElementById('send-btn');
     const pasteBtn = document.getElementById('paste-btn');
     const chatMessages = document.getElementById('chat-messages');
-    const aiLoading = document.getElementById('ai-loading');
+    
     
     let isSending = false;
     let currentConversationId = null; // Track current conversation
+    let currentLoadingElement = null; // Track the current loading indicator
     
     // ENABLE ALL INPUTS ON PAGE LOAD
     enableAllInputs();
@@ -578,6 +579,43 @@ document.addEventListener('DOMContentLoaded', function() {
         // Smart scroll for new messages only
         smartScrollToBottom();
     }
+
+    // dynamically create and insert loading indicator
+    function createAndInsertLoading() {
+        if (!chatMessages) return null;
+        
+        // Remove any existing loading indicator first
+        const existingLoading = chatMessages.querySelector('.ai-loading-indicator');
+        if (existingLoading) {
+            existingLoading.remove();
+        }
+        
+        // Create new loading element
+        const loadingDiv = document.createElement('div');
+        loadingDiv.className = 'ai-loading-indicator';
+        
+        // Create the message structure
+        loadingDiv.innerHTML = `
+            <div class="message assistant-message">
+                <div class="message-content">
+                    <strong>AI:</strong>
+                    <div class="loading-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Insert it at the END of chatMessages (after all messages)
+        chatMessages.appendChild(loadingDiv);
+        
+        // Scroll to show it
+        smartScrollToBottom();
+        
+        return loadingDiv;
+    }
     
     function createMessageFooter(content) {
         const messageFooter = document.createElement('div');
@@ -722,18 +760,18 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (messageInput) messageInput.focus();
     }
-    
+        
     function showAILoading() {
-        if (aiLoading) {
-            aiLoading.style.display = 'block';
-            smartScrollToBottom();
-        }
+        currentLoadingElement = createAndInsertLoading();
+        smartScrollToBottom();
     }
     
     function hideAILoading() {
-        if (aiLoading) aiLoading.style.display = 'none';
+        if (currentLoadingElement) {
+            currentLoadingElement.remove();
+            currentLoadingElement = null;
+        }
     }
-    
     function clearInput() {
         if (messageInput) {
             messageInput.value = '';
