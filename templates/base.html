@@ -25,19 +25,22 @@
     {% block extra_css %}{% endblock %}
    
 </head>
-<body>
-    <!-- Sticky Navbar -->
-   <nav class="navbar navbar-dark bg-dark sticky-navbar">
-    <div class="container">
-        <!-- ChatBot text/logo - NOW A LINK WHEN LOGGED IN -->
+    <body>
+        <!-- Sticky Navbar -->
+        <nav class="navbar navbar-dark bg-dark sticky-navbar">
+            <div class="container">
+                <!-- ChatBot text/logo - NOW A LINK WHEN LOGGED IN -->
         {% if user.is_authenticated %}
-            <!-- Link to chat page -->
-            <a href="{% url 'home' %}" class="navbar-brand" style="cursor: pointer; text-decoration: none;">
-                chatBot
+            <a href="{% url 'home' %}" class="navbar-brand logo-link">
+                <span class="chat-logo"></span>
+                <span class="logo-text">chatBot</span>
             </a>
         {% else %}
-            <!-- Plain text when not logged in -->
-            <span class="navbar-brand">chatBot</span>
+        <!-- Plain text when not logged in -->
+            <span class="navbar-brand logo-link">
+                <span class="chat-logo"></span>
+                <span class="logo-text">chatBot</span>
+            </span>
         {% endif %}
         
             {% if user.is_authenticated %}

@@ -667,79 +667,67 @@ html, body {
     background: rgba(40, 167, 69, 0.15);
 }
 
-/* AI Loading Indicator */
+/* ===== NEW ATOM LOADER ===== */
 .ai-loading-indicator {
-    /* Container for dots - minimal styling */
+    /* Container - minimal, ensures proper flow */
     display: block;
     margin: 1rem 0;
     padding: 0;
-    background: transparent;
-    border: none;
-    box-shadow: none;
     width: 100%;
 }
 
-.ai-loading-indicator .message-content {
-    /* remove bubble styling */
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    border-radius: 0 !important;
-}
-
-/*simple loading dots */
 .loading-dots-container {
+    /* Container for positioning the loader */
     display: flex;
-    justify-content: flex-start; /* Align with AI messages */
-    padding: 0.5rem 0;
-    margin-left: 1rem; /* Match your AI message indentation */
+    justify-content: flex-start;
+    padding: 0.5rem 0 0.5rem 1rem; /* Match AI message indentation */
 }
 
-/* Update existing loading-dots to be simpler */
-.loading-dots {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 0; /* Remove the 0.5rem top margin */
+/* The actual atom loader */
+.chat-loader {
+    position: relative;
+    display: inline-block;
+    animation: flix 3s ease-in infinite alternate;
+    --loader-primary: #adadad; /* Your dark color from buttons */
+    --loader-bg: rgba(66, 66, 66, 0.7); /* Semi-transparent white */
 }
 
-.loading-dots span {
-    width: 10px;
-    height: 10px;
+.chat-loader:before {
+    content: '';
+    display: block;
+    font-size: 0;
+    width: 48px;
+    height: 48px;
+    background-color: var(--loader-bg);
+    background-image:
+        radial-gradient(circle 12px at 22px 22px, var(--loader-primary) 100%, transparent 0),
+        radial-gradient(circle 10px at 6px 40px, var(--loader-primary) 100%, transparent 0),
+        radial-gradient(circle 14px at 31px -6px, var(--loader-primary) 100%, transparent 0),
+        radial-gradient(circle 5px at 40px 30px, var(--loader-primary) 100%, transparent 0);
     border-radius: 50%;
-    background: linear-gradient(135deg, #6c757d, #adb5bd); /* Muted grey */
-    animation: loading-dots 1.4s ease-in-out infinite both;
+    animation: rotate 1s linear infinite;
 }
 
-.loading-dots span:nth-child(1) {
-    animation-delay: -0.32s;
+.chat-loader:after {
+    content: '';
+    position: absolute;
+    top: 0%;
+    transform: translate(-50%, -100%);
+    left: 50%;
+    width: 24px;
+    height: 12px;
+    background: var(--loader-bg);
+    border-radius: 50px 50px 0 0;
 }
 
-.loading-dots span:nth-child(2) {
-    animation-delay: -0.16s;
+/* Loader animations - ADD THESE NEW KEYFRAMES */
+@keyframes flix {
+    0%, 60% { transform: rotate(-10deg); }
+    100%, 30%, 80% { transform: rotate(5deg); }
 }
 
-@keyframes loading-dots {
-    0%, 80%, 100% {
-        transform: scale(0.8);
-        opacity: 0.5;
-    }
-    40% {
-        transform: scale(1.2);
-        opacity: 1;
-    }
-}
-
-/* Keep your animation delays */
-.loading-dots span:nth-child(1) { animation-delay: -0.32s; }
-.loading-dots span:nth-child(2) { animation-delay: -0.16s; }
-
-/* Keep your keyframes */
-@keyframes loading-dots {
-    0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
-    40% { transform: scale(1.2); opacity: 1; }
+@keyframes rotate {
+    100% { transform: rotate(360deg); }
 }
 
 .empty-chat {
@@ -757,14 +745,6 @@ html, body {
     margin: 0;
     font-size: 1.1rem;
 }
-
-/* Removed old input styles 
-.input-group,
-.form-control,
-.input-area-wrapper,
-.text-input-container {
-    display: none;
-}*/
 
 /* Utility classes */
 .btn {
@@ -792,13 +772,6 @@ html, body {
     transform: none !important;
 }
 
-.loading-indicator {
-    text-align: center;
-    color: #0268c2;
-    font-style: italic;
-    font-size: 0.875rem;
-    padding: 0.5rem 0;
-}
 
 /* ===== RESPONSIVE DESIGN ===== */
 
@@ -1062,8 +1035,67 @@ html, body {
     100% { transform: rotate(360deg); }
 }
 
+/* Add this to your navbar section in styles.css */
+/*  NAVBAR LOGO  */
+.logo-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+    text-decoration: none;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
 
-/* ===== THREE DOTS MENU STYLES ===== */
+.logo-link:hover {
+    opacity: 0.9;
+}
+
+/* Logo orb */
+.chat-logo {
+    position: relative;
+    display: inline-block;
+    width: 32px;
+    height: 30px;
+    --logo-primary: #7d7d7d;
+    --logo-bg: #ffffff;
+}
+
+.chat-logo:before {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 100%;
+    background-color: var(--logo-bg);
+    background-image:
+        radial-gradient(circle 6px at 14px 14px, var(--logo-primary) 100%, transparent 0),
+        radial-gradient(circle 5px at 4px 26px, var(--logo-primary) 100%, transparent 0),
+        radial-gradient(circle 7px at 20px -3px, var(--logo-primary) 100%, transparent 0),
+        radial-gradient(circle 3px at 26px 20px, var(--logo-primary) 100%, transparent 0);
+    border-radius: 50%;
+}
+
+.chat-logo:after {
+    content: '';
+    position: absolute;
+    top: 0%;
+    transform: translate(-50%, -100%);
+    left: 50%;
+    width: 12px;
+    height: 6px;
+    background: var(--logo-bg);
+    border-radius: 50px 50px 0 0;
+    opacity: 0.5;
+}
+
+/* Logo text */
+.logo-text {
+    color: white;
+    font-weight: 600;
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+}
+/* THREE DOTS MENU STYLES */
 /* Three Dots Icon Styles - Horizontal */
 .three-dots-icon {
     color: rgba(255, 255, 255, 0.8);
@@ -1106,7 +1138,7 @@ html, body {
     display: flex !important;
 }
 
-/* ===== NEW HORIZONTAL PROFILE LAYOUT ===== */
+/*  NEW HORIZONTAL PROFILE LAYOUT  */
 /* Horizontal profile layout in navbar */
 .nav-profile-display {
     display: flex;
@@ -1257,7 +1289,7 @@ html, body {
     color: #6c757d;
     font-size: 0.8rem;
     overflow: hidden;
-    text-overflow: ellipsis;
+    -overflow: ellipsis;
     white-space: nowrap;
 }
 

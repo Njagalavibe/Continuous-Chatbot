@@ -314,42 +314,54 @@ document.addEventListener('DOMContentLoaded', function() {
             const conversationCards = document.querySelectorAll('.conversation-card');
             let hasVisibleResults = false;
             
-            conversationCards.forEach(card => {
-                const previewText = card.querySelector('.preview-text').textContent.toLowerCase();
+            conversationCards.forEach((card, index) => {
+                const previewElement = card.querySelector('.preview-text');  
+                const previewText = previewElement.textContent.toLowerCase();
                 const shouldShow = previewText.includes(term);
+                
                 card.style.display = shouldShow ? 'flex' : 'none';
                 
                 if (shouldShow) hasVisibleResults = true;
             });
-            
-            // Show/hide groups based on visible cards
+              
+           // Show/hide groups based on visible cards
             this.conversationGroups.forEach(group => {
-                const visibleCards = group.querySelectorAll('.conversation-card[style="display: flex"]');
-                group.style.display = visibleCards.length > 0 ? 'block' : 'none';
+                let hasVisibleCards = false;
+                
+                // Check each card's actual display style
+                group.querySelectorAll('.conversation-card').forEach(card => {
+                    const computedDisplay = window.getComputedStyle(card).display;
+                    if (computedDisplay !== 'none') {
+                        hasVisibleCards = true;
+                    }
+                });
+                
+                group.style.display = hasVisibleCards ? 'block' : 'none';
             });
-            
+
             // Show no results message if needed
             this.showNoResultsMessage(term, hasVisibleResults);
         }
 
-        showNoResultsMessage(searchTerm, hasVisibleResults) {
-            const loadingEl = document.getElementById('sidebar-loading');
-            const emptyEl = document.getElementById('sidebar-empty');
-            const groupsContainer = document.getElementById('conversation-groups-container');
-            const noResultsEl = document.getElementById('no-search-results');
-            
-            if (searchTerm && !hasVisibleResults) {
-                if (loadingEl) loadingEl.style.display = 'none';
-                if (emptyEl) emptyEl.style.display = 'none';
-                if (groupsContainer) groupsContainer.style.display = 'none';
-                if (noResultsEl) noResultsEl.style.display = 'flex';
-            } else if (groupsContainer) {
-                groupsContainer.style.display = 'block';
-                if (noResultsEl) noResultsEl.style.display = 'none';
-            }
+        showNoResultsMessage(searchTerm, hasVisibleResults){
+                    // ... this stays as a separate method ...
+        const loadingEl = document.getElementById('sidebar-loading');
+        const emptyEl = document.getElementById('sidebar-empty');
+        const groupsContainer = document.getElementById('conversation-groups-container');
+        const noResultsEl = document.getElementById('no-search-results');
+        
+        if (searchTerm && !hasVisibleResults) {
+            if (loadingEl) loadingEl.style.display = 'none';
+            if (emptyEl) emptyEl.style.display = 'none';
+            if (groupsContainer) groupsContainer.style.display = 'none';
+            if (noResultsEl) noResultsEl.style.display = 'flex';
+        } else if (groupsContainer) {
+            groupsContainer.style.display = 'block';
+            if (noResultsEl) noResultsEl.style.display = 'none';
         }
+    }
 
-        startNewChat() {
+        startNewChat(){
             // Clear active conversation
             this.setActiveConversation(null);
             currentConversationId = null;
@@ -596,16 +608,10 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Create the message structure
         loadingDiv.innerHTML = `
-            <div class="message assistant-message">
-                <div class="message-content">
-                    <strong>AI:</strong>
-                    <div class="loading-dots">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </div>
-                </div>
-            </div>
+            <div class="loading-dots-container">
+        <span class="chat-loader" style="display: inline-block;"></span>
+           </div>
+
         `;
         
         // Insert it at the END of chatMessages (after all messages)
